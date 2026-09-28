@@ -1,0 +1,35 @@
+{
+  "status": "verified_with_runtime_limitations",
+  "formula_count": 129,
+  "menu_count": 10,
+  "special_solver_count": 15,
+  "prd_formula_ids_present": 129,
+  "prd_missing_formula_ids": [],
+  "dart_formula_case_count": 129,
+  "visual_symbols_present": {
+    "∫": true,
+    "∑": true,
+    "π": true,
+    "σ": true,
+    "μ": true,
+    "Δ": true,
+    "θ": true,
+    "λ": true,
+    "ρ": true,
+    "ω": true,
+    "x": true,
+    "y": true,
+    "dy/dx": true
+  },
+  "local_first_ui_present": true,
+  "ai_gateway_route_present": true,
+  "ai_confirmation_present": true,
+  "python_test_status": "10/10 passed on 2026-09-28",
+  "word_render_status": "13 pages visually inspected via LibreOffice render",
+  "flutter_build_status": "not executed: Dart/Flutter executable blocked by Windows Application Control",
+  "sha256": {
+    "06_Vision_Field_Calc_PRD_v2.0.docx": "b608dd75c924f157e5c3f1cce854c423d8fcf08ccd7662f81fe221e18d079408",
+    "implementation\\catalog\\formulas_v2.json": "b56973433bd81cdef40850bcec5d1076b3e34f2c0ed674d16fd1c191a0b34388",
+    "implementation\\example_results.json": "208652e4a026972d9b24809ad11ec39f4a917282543c3575b7dca2a3c87157fe"
+  }
+}

@@ -1,0 +1,560 @@
+{
+  "area_circle": {
+    "formula_id": "AREA_CIRCLE_RADIUS",
+    "formula_version": "2.0.0",
+    "name_pt": "Círculo pelo raio",
+    "menu": "Áreas",
+    "result": 12.566370614359172,
+    "unit": "u²",
+    "validation_status": "implemented",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "pi*r**2",
+        "text_pt": "Círculo pelo raio"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "r=2",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "r>0",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "pi*(2)**2",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 12.5663706143592 u²",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": []
+  },
+  "volume_cylinder": {
+    "formula_id": "VOL_CYLINDER",
+    "formula_version": "2.0.0",
+    "name_pt": "Cilindro",
+    "menu": "Volumes",
+    "result": 28.274333882308138,
+    "unit": "u³",
+    "validation_status": "implemented",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "pi*r**2*height",
+        "text_pt": "Cilindro"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "r=1.5, height=4",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "r>0 ∧ height>0",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "pi*(1.5)**2*(4)",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 28.2743338823081 u³",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": []
+  },
+  "flow_darcy_headloss": {
+    "formula_id": "FLUID_DARCY_HEADLOSS",
+    "formula_version": "2.0.0",
+    "name_pt": "Perda de carga Darcy Weisbach",
+    "menu": "Fluidos e fluxos",
+    "result": 4.078864851911713,
+    "unit": "m",
+    "validation_status": "implemented",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "friction_factor*(length/diameter)*velocity**2/(2*g)",
+        "text_pt": "Perda de carga Darcy Weisbach"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "friction_factor=0.02, length=100, diameter=0.1, velocity=2, g=9.80665",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "friction_factor>=0 ∧ length>=0 ∧ diameter>0 ∧ velocity>=0 ∧ g>0",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "(0.02)*((100)/(0.1))*(2)**2/(2*(9.80665))",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 4.07886485191171 m",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": []
+  },
+  "three_phase_power": {
+    "formula_id": "ELEC_AC3_REAL_POWER",
+    "formula_version": "2.0.0",
+    "name_pt": "Potência ativa AC trifásica",
+    "menu": "Eletricidade",
+    "result": 19953.225303193467,
+    "unit": "W",
+    "validation_status": "implemented",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "sqrt(3)*line_voltage*line_current*power_factor",
+        "text_pt": "Potência ativa AC trifásica"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "line_voltage=400, line_current=32, power_factor=0.9",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "line_voltage>=0 ∧ line_current>=0 ∧ power_factor>=0 ∧ power_factor<=1",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "sqrt(3)*(400)*(32)*(0.9)",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 19953.2253031935 W",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": []
+  },
+  "beam_moment": {
+    "formula_id": "STRUCT_BEAM_MMAX_UDL",
+    "formula_version": "2.0.0",
+    "name_pt": "Momento máximo em viga simplesmente apoiada com carga uniforme",
+    "menu": "Estruturas e equipamentos",
+    "result": 10000.0,
+    "unit": "N·m",
+    "validation_status": "review_pending",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "uniform_load*span**2/8",
+        "text_pt": "Momento máximo em viga simplesmente apoiada com carga uniforme"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "uniform_load=5000, span=4",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "uniform_load>=0 ∧ span>0",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "(5000)*(4)**2/8",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 10000 N·m",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": [
+      "Validação técnica/certificação pendente; confirmar hipóteses, norma e edição antes de decisão real.",
+      "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    ]
+  },
+  "field_report_tolerance": {
+    "formula_id": "FR_TOLERANCE_UTILIZATION",
+    "formula_version": "2.0.0",
+    "name_pt": "Utilização da tolerância",
+    "menu": "Field Report",
+    "result": 60.00000000000014,
+    "unit": "%",
+    "validation_status": "review_pending",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Selecionar a fórmula",
+        "math": "100*abs(measured-nominal)/tolerance",
+        "text_pt": "Utilização da tolerância"
+      },
+      {
+        "number": 2,
+        "title": "Confirmar os dados",
+        "math": "measured=10.3, nominal=10, tolerance=0.5",
+        "text_pt": "Valores confirmados pelo utilizador"
+      },
+      {
+        "number": 3,
+        "title": "Verificar o domínio",
+        "math": "tolerance>0",
+        "text_pt": "Todas as condições foram satisfeitas"
+      },
+      {
+        "number": 4,
+        "title": "Substituir",
+        "math": "100*abs((10.3)-(10))/(0.5)",
+        "text_pt": "Substituição dos valores na fórmula versionada"
+      },
+      {
+        "number": 5,
+        "title": "Calcular",
+        "math": "resultado = 60.0000000000001 %",
+        "text_pt": "Resultado calculado localmente pelo motor determinístico"
+      }
+    ],
+    "limitations": [
+      "Validação técnica/certificação pendente; confirmar hipóteses, norma e edição antes de decisão real.",
+      "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    ]
+  },
+  "statistics": {
+    "count": 5,
+    "sum": 15.0,
+    "mean": 3.0,
+    "median": 3.0,
+    "minimum": 1.0,
+    "maximum": 5.0,
+    "range": 4.0,
+    "variance": 2.5,
+    "standard_deviation": 1.5811388300841898,
+    "steps": [
+      {
+        "number": 1,
+        "title": "Ordenar os dados",
+        "math": "x₍₁₎ ≤ … ≤ x₍ₙ₎",
+        "text_pt": "[1.0, 2.0, 3.0, 4.0, 5.0]"
+      },
+      {
+        "number": 2,
+        "title": "Calcular a média",
+        "math": "x̄ = (∑ᵢ xᵢ)/n",
+        "text_pt": "∑x=15; n=5; x̄=3"
+      },
+      {
+        "number": 3,
+        "title": "Calcular a variância",
+        "math": "s² = ∑ᵢ(xᵢ-x̄)²/n-1",
+        "text_pt": "2.5"
+      },
+      {
+        "number": 4,
+        "title": "Calcular o desvio padrão",
+        "math": "s = √s²",
+        "text_pt": "1.58113883008419"
+      }
+    ]
+  },
+  "equation": {
+    "degree": 2,
+    "roots": [
+      {
+        "real": 2.0,
+        "imaginary": 0.0
+      },
+      {
+        "real": -2.0,
+        "imaginary": 0.0
+      }
+    ],
+    "steps": [
+      {
+        "number": 1,
+        "title": "Construir o polinómio",
+        "math": "a0x^2 + a1x^1 + a2x^0 = 0",
+        "text_pt": "[1, 0, -4]"
+      },
+      {
+        "number": 2,
+        "title": "Normalizar",
+        "math": "a₀ = 1",
+        "text_pt": "[(1+0j), 0j, (-4+0j)]"
+      },
+      {
+        "number": 3,
+        "title": "Resolver",
+        "math": "P(x)=0",
+        "text_pt": "[{'real': 2.0, 'imaginary': 0.0}, {'real': -2.0, 'imaginary': 0.0}]"
+      }
+    ]
+  },
+  "limit": {
+    "result": 1.0,
+    "exists_numerically": true,
+    "estimates": [
+      {
+        "label": "x→a⁻",
+        "samples": [
+          [
+            -0.01,
+            0.9999833334166665
+          ],
+          [
+            -0.001,
+            0.9999998333333416
+          ],
+          [
+            -0.0001,
+            0.9999999983333334
+          ],
+          [
+            -1e-05,
+            0.9999999999833332
+          ],
+          [
+            -1e-06,
+            0.9999999999998334
+          ],
+          [
+            -1e-07,
+            0.9999999999999983
+          ],
+          [
+            -1e-08,
+            1.0
+          ],
+          [
+            -1e-09,
+            1.0
+          ]
+        ],
+        "estimate": 1.0
+      },
+      {
+        "label": "x→a⁺",
+        "samples": [
+          [
+            0.01,
+            0.9999833334166665
+          ],
+          [
+            0.001,
+            0.9999998333333416
+          ],
+          [
+            0.0001,
+            0.9999999983333334
+          ],
+          [
+            1e-05,
+            0.9999999999833332
+          ],
+          [
+            1e-06,
+            0.9999999999998334
+          ],
+          [
+            1e-07,
+            0.9999999999999983
+          ],
+          [
+            1e-08,
+            1.0
+          ],
+          [
+            1e-09,
+            1.0
+          ]
+        ],
+        "estimate": 1.0
+      }
+    ],
+    "steps": [
+      {
+        "number": 1,
+        "title": "Definir o limite",
+        "math": "lim sin(x)/x",
+        "text_pt": "x→0"
+      },
+      {
+        "number": 2,
+        "title": "Aproximar pelos lados",
+        "math": "x→a⁻ e x→a⁺",
+        "text_pt": "Sequências progressivamente próximas"
+      },
+      {
+        "number": 3,
+        "title": "Comparar",
+        "math": "L⁻=1; L⁺=1",
+        "text_pt": "Convergência numérica"
+      },
+      {
+        "number": 4,
+        "title": "Conclusão",
+        "math": "L≈1",
+        "text_pt": "Estimativa numérica; funções difíceis podem exigir método simbólico"
+      }
+    ]
+  },
+  "integral": {
+    "result": 0.3333333333333333,
+    "intervals": 1000,
+    "steps": [
+      {
+        "number": 1,
+        "title": "Definir o integral",
+        "math": "∫₍0₎^(1) (x**2) dx",
+        "text_pt": "Limites e integrando confirmados"
+      },
+      {
+        "number": 2,
+        "title": "Dividir o intervalo",
+        "math": "h=(1−0)/1000",
+        "text_pt": "h=0.001"
+      },
+      {
+        "number": 3,
+        "title": "Aplicar Simpson",
+        "math": "∫ f(x)dx ≈ h/3[f₀+fₙ+4∑fᵢ(ímpar)+2∑fᵢ(par)]",
+        "text_pt": "∑ímpar=166.6665; ∑par=166.167"
+      },
+      {
+        "number": 4,
+        "title": "Resultado",
+        "math": "∫ ≈ 0.333333333333333",
+        "text_pt": "Integração numérica"
+      }
+    ]
+  },
+  "differential_equation": {
+    "x": 1.0000000000000007,
+    "y": 2.718281828234404,
+    "steps_count": 100,
+    "table": [
+      {
+        "i": 0,
+        "x": 0.0,
+        "y": 1.0
+      },
+      {
+        "i": 1,
+        "x": 0.01,
+        "y": 1.0100501670833333,
+        "k1": 1.0,
+        "k2": 1.005,
+        "k3": 1.005025,
+        "k4": 1.01005025
+      },
+      {
+        "i": 2,
+        "x": 0.02,
+        "y": 1.0202013400250696,
+        "k1": 1.0100501670833333,
+        "k2": 1.01510041791875,
+        "k3": 1.0151256691729271,
+        "k4": 1.0202014237750625
+      },
+      {
+        "i": 3,
+        "x": 0.03,
+        "y": 1.030454533950962,
+        "k1": 1.0202013400250696,
+        "k2": 1.025302346725195,
+        "k3": 1.0253278517586955,
+        "k4": 1.0304546185426566
+      },
+      {
+        "i": 4,
+        "x": 0.04,
+        "y": 1.0408107741889476,
+        "k1": 1.030454533950962,
+        "k2": 1.035606806620717,
+        "k3": 1.0356325679840657,
+        "k4": 1.0408108596308028
+      },
+      {
+        "i": 5,
+        "x": 0.05,
+        "y": 1.05127109637168,
+        "k1": 1.0408107741889476,
+        "k2": 1.0460148280598924,
+        "k3": 1.0460408483292472,
+        "k4": 1.05127118267224
+      },
+      {
+        "i": 100,
+        "x": 1.0000000000000007,
+        "y": 2.718281828234404,
+        "k1": 2.6912344721290804,
+        "k2": 2.704690644489726,
+        "k3": 2.704757925351529,
+        "k4": 2.718282051382596
+      }
+    ],
+    "steps": [
+      {
+        "number": 1,
+        "title": "Definir a EDO",
+        "math": "dy/dx = f(x,y)",
+        "text_pt": "y"
+      },
+      {
+        "number": 2,
+        "title": "Definir condição inicial",
+        "math": "y(0)=1",
+        "text_pt": "Calcular até x=1"
+      },
+      {
+        "number": 3,
+        "title": "Aplicar Runge Kutta 4",
+        "math": "yₙ₊₁=yₙ+h(k₁+2k₂+2k₃+k₄)/6",
+        "text_pt": "n=100; h=0.01"
+      },
+      {
+        "number": 4,
+        "title": "Resultado",
+        "math": "y(1)≈2.7182818282344",
+        "text_pt": "Solução numérica do problema de valor inicial"
+      }
+    ]
+  }
+}

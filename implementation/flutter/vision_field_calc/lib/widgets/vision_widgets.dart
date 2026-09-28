@@ -200,7 +200,8 @@ class FormulaCard extends StatelessWidget {
 class AiProposalPanel extends StatelessWidget {
   final AiProposal proposal;
   final VoidCallback onConfirm;
-  const AiProposalPanel({super.key, required this.proposal, required this.onConfirm});
+  final bool showAction;
+  const AiProposalPanel({super.key, required this.proposal, required this.onConfirm, this.showAction = true});
 
   @override
   Widget build(BuildContext context) {
@@ -229,14 +230,21 @@ class AiProposalPanel extends StatelessWidget {
         Text('Unidades: ${proposal.units}', style: Theme.of(context).textTheme.bodyMedium),
         if (proposal.assumptions.isNotEmpty)
           Text('Hipóteses: ${proposal.assumptions.join('; ')}', style: Theme.of(context).textTheme.bodyMedium),
+        if (proposal.missingFields.isNotEmpty)
+          Text('Em falta: ${proposal.missingFields.join(', ')}', style: Theme.of(context).textTheme.bodyMedium),
+        if (proposal.confidence != null)
+          Text('Confiança da proposta: ${proposal.confidence}', style: Theme.of(context).textTheme.bodySmall),
+        Text('Modo: ${proposal.providerMode}. Um número remoto não é resultado.', style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: VisionTheme.space12),
         for (var index = 0; index < proposal.explanationSteps.length; index++)
           Padding(
             padding: const EdgeInsets.only(bottom: VisionTheme.space8),
             child: SelectableText('${index + 1}. ${proposal.explanationSteps[index]}', style: VisionTheme.math.copyWith(fontSize: 18)),
           ),
-        const SizedBox(height: VisionTheme.space8),
-        VisionPrimaryButton(label: 'Confirmar parâmetros', onPressed: onConfirm),
+        if (showAction) ...[
+          const SizedBox(height: VisionTheme.space8),
+          VisionPrimaryButton(key: const Key('confirm-ai'), label: 'Confirmar parâmetros', onPressed: onConfirm),
+        ],
       ]),
     );
   }

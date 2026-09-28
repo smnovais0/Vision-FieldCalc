@@ -73,21 +73,30 @@ FormulaDefinition? formulaById(String id) {
   return null;
 }
 
-/// Procura uma fórmula local por palavras inteiras do nome ou do identificador.
-FormulaDefinition? findLocalFormula(String query) {
+/// Fórmulas locais com a melhor pontuação. Empate não escolhe uma fórmula.
+List<FormulaDefinition> matchLocalFormulas(String query) {
   final words = queryTokens(query).toSet();
-  if (words.isEmpty) return null;
-  FormulaDefinition? best;
+  if (words.isEmpty) return const [];
+  final scored = <FormulaDefinition, int>{};
   var bestScore = 0;
   for (final formula in formulas) {
     final haystack = queryTokens('${formula.name} ${formula.id.replaceAll('_', ' ')}').toSet();
     final score = words.intersection(haystack).length;
-    if (score > bestScore) {
-      bestScore = score;
-      best = formula;
-    }
+    if (score == 0) continue;
+    scored[formula] = score;
+    if (score > bestScore) bestScore = score;
   }
-  return best;
+  return [
+    for (final entry in scored.entries)
+      if (entry.value == bestScore) entry.key,
+  ];
+}
+
+/// Procura uma fórmula local única. Empate devolve nulo para exigir confirmação.
+FormulaDefinition? findLocalFormula(String query) {
+  final matches = matchLocalFormulas(query);
+  if (matches.length != 1) return null;
+  return matches.single;
 }
 
 RoutePlan planNaturalLanguage(String query) {
@@ -95,11 +104,17 @@ RoutePlan planNaturalLanguage(String query) {
   if (trimmed.isEmpty) {
     throw const FormatException('Descreva primeiro o cálculo pretendido.');
   }
-  final local = findLocalFormula(trimmed);
-  if (local != null) {
+  final matches = matchLocalFormulas(trimmed);
+  if (matches.length == 1) {
     return RoutePlan.local(
-      local,
+      matches.single,
       'Fórmula local encontrada. Confirme os parâmetros e calcule no dispositivo.',
+    );
+  }
+  if (matches.length > 1) {
+    final names = matches.take(4).map((formula) => formula.name).join(', ');
+    return RoutePlan.ai(
+      'O pedido corresponde a mais do que uma fórmula local ($names). A interpretação por IA requer confirmação antes de calcular.',
     );
   }
   return const RoutePlan.ai(

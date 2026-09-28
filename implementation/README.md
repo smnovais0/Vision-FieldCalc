@@ -36,3 +36,7 @@ flutter run --dart-define=VISION_AI_GATEWAY_URL=https://<gateway-autorizado>
 ```
 
 Sem esse `dart-define`, o cliente recusa a chamada e mostra que o Vision AI Gateway ainda não está configurado. Um resultado `review_pending` não certifica conformidade: a interface mantém o aviso de revisão pendente depois do cálculo.
+
+A interface está em pt-PT, o histórico local exporta JSON com hash e os eventos de uso não guardam valores introduzidos. Um pedido ambíguo ou sem fórmula local pede confirmação. A proposta da IA só produz número quando o motor local recalcula a fórmula ou a expressão. Quota esgotada, rede ausente ou resposta com credencial deixam os cálculos locais disponíveis.
+
+A validação normativa (fase 3) e a publicação nas lojas (fase 4) não fazem parte desta entrega. Apple continua pendente de hardware.

@@ -1,13 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'advanced_solver.dart';
 import 'ai_gateway.dart';
+import 'calculation_record.dart';
 import 'catalog_router.dart';
 import 'generated/formula_engine.g.dart';
 import 'local_solvers.dart';
 import 'math_step_view.dart';
+import 'privacy_analytics.dart';
+import 'proposal_guard.dart';
 import 'solver_workspace.dart';
 import 'vision_theme.dart';
 import 'widgets/vision_widgets.dart';
@@ -15,7 +19,8 @@ import 'widgets/vision_widgets.dart';
 void main() => runApp(const VisionFieldCalcApp());
 
 class VisionFieldCalcApp extends StatelessWidget {
-  const VisionFieldCalcApp({super.key});
+  final VisionAiGateway? gateway;
+  const VisionFieldCalcApp({super.key, this.gateway});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +28,14 @@ class VisionFieldCalcApp extends StatelessWidget {
       title: 'Vision Field Calc',
       debugShowCheckedModeBanner: false,
       theme: VisionTheme.light,
-      home: const CalculatorHome(),
+      locale: const Locale('pt', 'PT'),
+      supportedLocales: const [Locale('pt', 'PT')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: CalculatorHome(gateway: gateway),
     );
   }
 }
@@ -36,7 +48,8 @@ class HistoryEntry {
 }
 
 class CalculatorHome extends StatefulWidget {
-  const CalculatorHome({super.key});
+  final VisionAiGateway? gateway;
+  const CalculatorHome({super.key, this.gateway});
 
   @override
   State<CalculatorHome> createState() => _CalculatorHomeState();
@@ -110,6 +123,11 @@ class _CalculatorHomeState extends State<CalculatorHome> {
 
   void choose(FormulaDefinition formula) {
     _releaseControllers();
+    PrivacyAnalytics.record('formula_opened', {
+      'formula_id': formula.id,
+      'formula_version': catalogVersion,
+      'menu': formula.menu,
+    });
     setState(() {
       selected = formula;
       menu = formula.menu;
@@ -173,11 +191,12 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       error = null;
     });
     try {
-      final proposal = await VisionAiGateway().interpret(problem);
+      final proposal = await (widget.gateway ?? VisionAiGateway()).interpret(problem);
       if (!mounted) return;
       final match = proposal.formulaId == null ? null : formulaById(proposal.formulaId!);
       if (match != null) choose(match);
       _applyProposalValues(proposal);
+      PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': 'proposed'});
       setState(() {
         aiProposal = proposal;
         aiOffer = false;
@@ -186,7 +205,16 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       });
     } catch (exception) {
       if (!mounted) return;
-      setState(() => error = exception.toString().replaceFirst('Bad state: ', ''));
+      final message = exception.toString().replaceFirst('Bad state: ', '');
+      final status = message.contains('quota')
+          ? 'quota'
+          : message.contains('rede')
+              ? 'offline'
+              : message.contains('configurado')
+                  ? 'unconfigured'
+                  : 'rejected';
+      PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': status});
+      setState(() => error = message);
     } finally {
       if (mounted) setState(() => aiBusy = false);
     }
@@ -203,11 +231,48 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   }
 
   void confirmProposal() {
+    final proposal = aiProposal;
+    if (proposal == null) return;
+    final review = reviewProposal(
+      formulaId: proposal.formulaId,
+      proposedExpression: proposal.proposedExpression,
+      displayMath: proposal.displayMath,
+      assumptions: proposal.assumptions,
+      steps: proposal.explanationSteps,
+      missingFields: proposal.missingFields,
+      variables: proposal.variables,
+    );
+    PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': review.status});
+    if (review.formula != null) {
+      choose(review.formula!);
+      _applyProposalValues(proposal);
+      setState(() {
+        routingMessage = review.message;
+        engineMode = 'Cálculo local';
+      });
+      calculate();
+      return;
+    }
+    if (review.localValue != null) {
+      final value = review.localValue!;
+      setState(() {
+        calculation = LocalCalculation(value, [
+          CalculationStep('Expressão confirmada', proposal.proposedExpression, 'Recalculada no dispositivo a partir da expressão proposta.'),
+          CalculationStep('Valor local', '$value', 'Este número não vem do modelo e não certifica a expressão.'),
+        ]);
+        error = null;
+        routingMessage = review.message;
+        engineMode = 'Cálculo local';
+        history.insert(0, HistoryEntry('Expressão confirmada', '$value', jsonEncode({'status': 'local_expression', 'result': value})));
+      });
+      return;
+    }
     setState(() {
-      routingMessage = 'Parâmetros da proposta prontos a confirmar. O cálculo seguinte é feito pelo motor local.';
-      engineMode = selected == null ? 'Interpretação por IA' : 'Cálculo local';
+      calculation = null;
+      error = review.status == 'blocked' || review.status == 'missing' ? review.message : null;
+      routingMessage = review.message;
+      engineMode = 'Interpretação por IA';
     });
-    if (selected != null) calculate();
   }
 
   void calculate() {
@@ -218,15 +283,25 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         for (final entry in controllers.entries) entry.key: parseNumber(entry.value.text, entry.key),
       };
       final result = calculateFormula(formula, values);
-      final record = <String, Object?>{
+      final record = calculationRecord(
+        formulaId: formula.id,
+        formulaVersion: catalogVersion,
+        engineVersion: engineVersion,
+        status: formula.status,
+        inputs: values,
+        result: result.value,
+        unit: formula.unit,
+        limitations: formula.status == 'review_pending'
+            ? (formula.notes.isEmpty ? 'Revisão pendente. O cálculo não certifica conformidade.' : formula.notes)
+            : 'Cálculo local do catálogo $catalogVersion.',
+        confirmedAt: DateTime.now(),
+      );
+      PrivacyAnalytics.record('calculation_completed', {
         'formula_id': formula.id,
         'formula_version': catalogVersion,
-        'engine_version': engineVersion,
+        'outcome': 'completed',
         'status': formula.status,
-        'inputs': values,
-        'result': result.value,
-        'unit': formula.unit,
-      };
+      });
       setState(() {
         calculation = result;
         error = null;
@@ -234,6 +309,11 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         history.insert(0, HistoryEntry(formula.name, '${result.value} ${formula.unit}', jsonEncode(record)));
       });
     } on FormatException catch (exception) {
+      PrivacyAnalytics.record('validation_failed', {
+        'formula_id': formula.id,
+        'code': 'domain',
+        'status': formula.status,
+      });
       setState(() {
         calculation = null;
         error = exception.message;
@@ -458,28 +538,38 @@ class _CalculatorHomeState extends State<CalculatorHome> {
     if (solverMenus.contains(menu)) return SolverWorkspace(menu: menu);
     final formula = selected;
     if (formula == null) {
-      return ListView(key: const Key('work-list'), children: [
-        Semantics(
-          label: 'Notação suportada: integral, somatório, pi, sigma, mu, delta, teta, lambda, ró, ómega, x, y e derivada',
-          child: const SelectableText(
-            '∫    ∑    √    π    σ    μ    Δ    θ    λ    ρ    ω    x    y    dy/dx',
-            key: Key('math-notation'),
-            style: VisionTheme.math,
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: ListView(key: const Key('work-list'), children: [
+              Semantics(
+                label: 'Notação suportada: integral, somatório, pi, sigma, mu, delta, teta, lambda, ró, ómega, x, y e derivada',
+                child: const SelectableText(
+                  '∫    ∑    √    π    σ    μ    Δ    θ    λ    ρ    ω    x    y    dy/dx',
+                  key: Key('math-notation'),
+                  style: VisionTheme.math,
+                ),
+              ),
+              if (aiProposal != null) ...[
+                const SizedBox(height: VisionTheme.space16),
+                AiProposalPanel(proposal: aiProposal!, onConfirm: confirmProposal, showAction: false),
+              ],
+              const SizedBox(height: VisionTheme.space16),
+              Text('Escolha uma fórmula no catálogo.', style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: VisionTheme.space12),
+              Text(
+                'Cada resultado mostra a fórmula, os dados confirmados, o domínio, a substituição e o valor. Entradas em revisão pendente continuam calculáveis e avisam que a validação técnica ainda não foi feita.',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ]),
           ),
-        ),
-        const SizedBox(height: VisionTheme.space16),
-        Text('Escolha uma fórmula no catálogo.', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: VisionTheme.space12),
-        Text(
-          'Cada resultado mostra a fórmula, os dados confirmados, o domínio, a substituição e o valor. Entradas em revisão pendente continuam calculáveis e avisam que a validação técnica ainda não foi feita.',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-        if (error != null) _error(error!),
-        if (aiProposal != null) ...[
-          const SizedBox(height: VisionTheme.space16),
-          AiProposalPanel(proposal: aiProposal!, onConfirm: confirmProposal),
+          if (aiProposal != null) ...[
+            const SizedBox(height: VisionTheme.space12),
+            VisionPrimaryButton(key: const Key('confirm-ai'), label: 'Confirmar parâmetros', onPressed: confirmProposal),
+          ],
         ],
-      ]);
+      );
     }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -513,10 +603,10 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                     unit: formula.unit,
                   ),
                 ],
-                if (aiProposal != null) ...[
-                  const SizedBox(height: VisionTheme.space16),
-                  AiProposalPanel(proposal: aiProposal!, onConfirm: confirmProposal),
-                ],
+              if (aiProposal != null) ...[
+                const SizedBox(height: VisionTheme.space16),
+                AiProposalPanel(proposal: aiProposal!, onConfirm: confirmProposal, showAction: false),
+              ],
               ],
             ),
           ),

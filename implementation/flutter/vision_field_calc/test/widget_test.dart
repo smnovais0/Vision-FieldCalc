@@ -1,5 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:vision_field_calc/ai_gateway.dart';
 import 'package:vision_field_calc/main.dart';
 import 'package:vision_field_calc/vision_theme.dart';
 
@@ -27,6 +32,7 @@ void main() {
     await _pumpAt(tester, const Size(1280, 720));
     expect(find.text('Vision Field Calc'), findsOneWidget);
     expect(find.text('Cálculo local'), findsOneWidget);
+    expect(tester.widget<MaterialApp>(find.byType(MaterialApp)).locale, const Locale('pt', 'PT'));
     final padding = tester.widget<Padding>(find.byKey(const Key('page-padding')));
     expect((padding.padding as EdgeInsets).left, VisionTheme.space64);
     expect(Theme.of(tester.element(find.text('Vision Field Calc'))).colorScheme.primary, VisionTheme.black);
@@ -63,7 +69,7 @@ void main() {
     expect(find.byKey(const Key('result-value')), findsNothing);
     await tester.tap(find.byKey(const Key('continue-ai')));
     await tester.pump();
-    expect(find.textContaining('Vision AI Gateway ainda não está configurado'), findsOneWidget);
+    expect(find.textContaining('Vision AI Gateway ainda não está configurado'), findsWidgets);
     expect(find.byKey(const Key('result-value')), findsNothing);
   });
 
@@ -78,6 +84,62 @@ void main() {
     await tester.pump();
     expect(find.byKey(const Key('catalog-list')), findsOneWidget);
     expect(find.text('Áreas'), findsWidgets);
+  });
+
+  testWidgets('domínio inválido aparece no ecrã e o integral local resolve', (tester) async {
+    await _pumpAt(tester, const Size(1440, 900));
+    await _search(tester, 'quadrado');
+    await tester.enterText(editableIn(const Key('input-a')), '0');
+    await tester.tap(find.byKey(const Key('calculate-local')));
+    await tester.pump();
+    expect(find.textContaining('domínio'), findsWidgets);
+
+    await tester.drag(find.byKey(const Key('menu-tabs')), const Offset(-520, 0));
+    await tester.pump();
+    await tester.tap(find.text('Limites e cálculo'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('solver-run')));
+    await tester.pump();
+    expect(find.byKey(const Key('solver-workspace')), findsOneWidget);
+    expect(selectableContaining('∫'), findsWidgets);
+  });
+
+  testWidgets('pedido ambíguo pede confirmação e a proposta local não usa o número remoto', (tester) async {
+    await _pumpAt(tester, const Size(1440, 900));
+    await _search(tester, 'circulo');
+    expect(find.text('Interpretação por IA'), findsOneWidget);
+    expect(find.byKey(const Key('result-value')), findsNothing);
+
+    final client = MockClient((request) async {
+      return http.Response(
+        jsonEncode({
+          'formula_id': 'AREA_CIRCLE_RADIUS',
+          'display_math': 'π × r²',
+          'variables': {'r': 2},
+          'units': {'r': 'u'},
+          'assumptions': ['raio positivo'],
+          'missing_fields': [],
+          'confidence': 0.4,
+          'steps': ['usar a fórmula local'],
+          'provider_mode': 'managed',
+          'result': 999,
+        }),
+        200,
+        headers: {'content-type': 'application/json'},
+      );
+    });
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    await tester.pumpWidget(VisionFieldCalcApp(gateway: VisionAiGateway(baseUrl: 'https://gateway.test', client: client)));
+    await tester.pump();
+    await _search(tester, 'forma nao catalogada');
+    await tester.tap(find.byKey(const Key('continue-ai')));
+    await tester.pump();
+    expect(find.byKey(const Key('ai-proposal')), findsOneWidget);
+    expect(find.textContaining('999'), findsNothing);
+    await tester.tap(find.byKey(const Key('calculate-local')));
+    await tester.pump();
+    expect(selectableContaining('12.56637061435917'), findsWidgets);
+    expect(find.textContaining('999'), findsNothing);
   });
 
   testWidgets('tablet 768 mantém coluna única e fundo claro', (tester) async {

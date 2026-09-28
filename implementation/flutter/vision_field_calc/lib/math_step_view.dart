@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'generated/formula_engine.g.dart';
+import 'unit_policy.dart';
 import 'vision_theme.dart';
 
 class MathStepView extends StatelessWidget {
@@ -30,6 +31,12 @@ class MathStepView extends StatelessWidget {
         ),
       if (resultText != null && unit != null) ...[
         ResultLine(value: resultText!, unit: unit!),
+        if (_imperialNote(resultText!, unit!) != null) ...[
+          const SizedBox(height: VisionTheme.space8),
+          Text(_imperialNote(resultText!, unit!)!, style: Theme.of(context).textTheme.bodySmall),
+        ],
+        const SizedBox(height: VisionTheme.space8),
+        Text(UnitPolicy.note(unit!), style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: VisionTheme.space16),
       ],
       for (var index = 0; index < steps.length; index++) ...[
@@ -46,6 +53,14 @@ class MathStepView extends StatelessWidget {
       ),
     ]);
   }
+}
+
+String? _imperialNote(String resultText, String unit) {
+  final value = double.tryParse(resultText.trim());
+  if (value == null) return null;
+  final equivalent = UnitPolicy.imperialEquivalent(value, unit);
+  if (equivalent == null) return null;
+  return 'Apresentação imperial: $equivalent. O valor das etapas seguintes permanece $resultText $unit.';
 }
 
 class ResultLine extends StatelessWidget {

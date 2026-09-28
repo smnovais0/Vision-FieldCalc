@@ -128,6 +128,11 @@ void main() {
     final missing = planFormulaId('NAO_EXISTE');
     expect(missing.route, 'ai_confirmation_required');
     expect(() => planNaturalLanguage('   '), throwsFormatException);
+
+    final ambiguous = planNaturalLanguage('circulo');
+    expect(ambiguous.route, 'ai_confirmation_required');
+    expect(ambiguous.formula, isNull);
+    expect(matchLocalFormulas('circulo').length, greaterThan(1));
   });
 
   test('solucionadores locais reproduzem os exemplos numéricos', () {

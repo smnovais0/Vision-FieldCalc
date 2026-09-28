@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'local_solvers.dart';
 import 'math_step_view.dart';
+import 'privacy_analytics.dart';
 import 'vision_theme.dart';
 import 'widgets/vision_widgets.dart';
 
@@ -137,11 +138,13 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
         SolverKind.ode1 => rk4FirstOrder(_text('expression'), parseNumber(_text('x0'), 'x inicial'), parseNumber(_text('y0'), 'y inicial'), parseNumber(_text('x1'), 'x final'), parseNumber(_text('steps'), 'os passos').round()),
         SolverKind.ode2 => rk4SecondOrder(_text('expression'), parseNumber(_text('x0'), 'x inicial'), parseNumber(_text('y0'), 'y inicial'), parseNumber(_text('dy0'), 'dy/dx inicial'), parseNumber(_text('x1'), 'x final'), parseNumber(_text('steps'), 'os passos').round()),
       };
+      PrivacyAnalytics.record('solver_completed', {'method': kind.name, 'status': 'ok'});
       setState(() {
         run = value;
         error = null;
       });
     } catch (exception) {
+      PrivacyAnalytics.record('solver_completed', {'method': kind.name, 'status': 'error'});
       setState(() {
         run = null;
         error = exception.toString().replaceFirst('FormatException: ', '').replaceFirst('Bad state: ', '');
@@ -178,44 +181,55 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
   @override
   Widget build(BuildContext context) {
     final spec = specs.firstWhere((item) => item.kind == kind);
-    return ListView(
-      key: const Key('solver-workspace'),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(widget.menu, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: VisionTheme.space8),
-        Text(
-          'Método numérico local. A aproximação não é apresentada como igualdade exata.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: VisionTheme.mutedText),
-        ),
-        const SizedBox(height: VisionTheme.space16),
-        VisionTabBar(
-          tabs: [for (final item in specs) item.label],
-          selected: spec.label,
-          onSelected: (label) {
-            setState(() => _load(specs.firstWhere((item) => item.label == label)));
-          },
-        ),
-        const SizedBox(height: VisionTheme.space16),
-        for (final entry in spec.initial.entries) ...[
-          VisionField(
-            key: Key('solver-${entry.key}'),
-            controller: controllers[entry.key]!,
-            label: _label(entry.key),
-            keyboardType: entry.key == 'expression' || entry.key == 'matrix' || entry.key == 'coefficients'
-                ? TextInputType.text
-                : const TextInputType.numberWithOptions(decimal: true, signed: true),
+        Expanded(
+          child: SingleChildScrollView(
+            key: const Key('solver-workspace'),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(widget.menu, style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: VisionTheme.space8),
+                Text(
+                  'Método numérico local. A aproximação não é apresentada como igualdade exata.',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: VisionTheme.mutedText),
+                ),
+                const SizedBox(height: VisionTheme.space16),
+                VisionTabBar(
+                  tabs: [for (final item in specs) item.label],
+                  selected: spec.label,
+                  onSelected: (label) {
+                    setState(() => _load(specs.firstWhere((item) => item.label == label)));
+                  },
+                ),
+                const SizedBox(height: VisionTheme.space16),
+                for (final entry in spec.initial.entries) ...[
+                  VisionField(
+                    key: Key('solver-${entry.key}'),
+                    controller: controllers[entry.key]!,
+                    label: _label(entry.key),
+                    keyboardType: entry.key == 'expression' || entry.key == 'matrix' || entry.key == 'coefficients'
+                        ? TextInputType.text
+                        : const TextInputType.numberWithOptions(decimal: true, signed: true),
+                  ),
+                  const SizedBox(height: VisionTheme.space12),
+                ],
+                if (error != null) ...[
+                  const SizedBox(height: VisionTheme.space12),
+                  Text('Erro: $error', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
+                ],
+                if (run != null) ...[
+                  const SizedBox(height: VisionTheme.space16),
+                  MathStepView(steps: run!.steps, pendingReview: false, resultText: run!.headline, unit: ''),
+                ],
+              ],
+            ),
           ),
-          const SizedBox(height: VisionTheme.space12),
-        ],
-        VisionPrimaryButton(label: 'Resolver localmente', onPressed: solve),
-        if (error != null) ...[
-          const SizedBox(height: VisionTheme.space12),
-          Text('Erro: $error', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
-        ],
-        if (run != null) ...[
-          const SizedBox(height: VisionTheme.space16),
-          MathStepView(steps: run!.steps, pendingReview: false, resultText: run!.headline, unit: ''),
-        ],
+        ),
+        const SizedBox(height: VisionTheme.space12),
+        VisionPrimaryButton(key: const Key('solver-run'), label: 'Resolver localmente', onPressed: solve),
       ],
     );
   }

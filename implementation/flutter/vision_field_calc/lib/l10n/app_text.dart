@@ -80,6 +80,7 @@ class AppText {
         'quota' => _t('gatewayQuota'),
         'rejected' => _t('gatewayRejected'),
         'invalid' => _t('gatewayInvalid'),
+        'insecure' => _t('gatewayInsecure'),
         'status' => _t('gatewayStatus').replaceAll('{status}', '${statusCode ?? ''}'),
         _ => _t('gatewayInvalid'),
       };
@@ -164,7 +165,7 @@ class AppText {
 
   String present(String raw, {int? statusCode}) {
     if (raw == 'status') return gateway(raw, statusCode);
-    const gatewayCodes = {'unconfigured', 'offline', 'quota', 'rejected', 'invalid'};
+    const gatewayCodes = {'unconfigured', 'offline', 'quota', 'rejected', 'invalid', 'insecure'};
     if (gatewayCodes.contains(raw)) return gateway(raw, statusCode);
     if (raw.startsWith('ambiguous:')) {
       final names = raw.substring('ambiguous:'.length).split('|').where((id) => id.isNotEmpty).map((id) {

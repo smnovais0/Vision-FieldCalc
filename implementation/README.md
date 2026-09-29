@@ -21,9 +21,11 @@ python -m vision_field_calc.cli integral "sin(x)" x 0 3.141592653589793
 python -m unittest discover -s tests -v
 ```
 
+`CalculationRouter.route_natural_language` devolve sempre confirmação de IA. Não pesquisa o catálogo. A aplicação Flutter faz essa pesquisa primeiro e não segue o caminho Python de IA permanente.
+
 ## Interface Flutter
 
-A pasta `flutter/vision_field_calc` contém a interface cross-platform. O catálogo JSON é um asset da aplicação. A interface procura primeiro no catálogo local e só apresenta o envio para IA quando não encontra uma solução. A chamada usa exclusivamente o endpoint intermédio `VISION_AI_GATEWAY_URL`; a app não contém credenciais de fornecedores de IA nem acede diretamente a esses serviços.
+A pasta `flutter/vision_field_calc` contém a interface cross-platform. O catálogo JSON é compilado para `flutter/vision_field_calc/lib/generated/formula_engine.g.dart`. Não é um asset de runtime do Flutter. A interface procura primeiro no catálogo local e só apresenta o envio para IA quando não encontra uma solução. A chamada usa exclusivamente o endpoint intermédio `VISION_AI_GATEWAY_URL`; a app não contém credenciais de fornecedores de IA nem acede diretamente a esses serviços.
 
 O Vision AI Gateway recebe um pedido de interpretação e devolve fórmula, variáveis, unidades, hipóteses e passos. O utilizador tem de confirmar a proposta antes de o motor local calcular. Configuração prevista para o build autorizado:
 
@@ -37,6 +39,6 @@ flutter run -d web-server --dart-define=VISION_AI_GATEWAY_URL=https://<gateway-a
 
 Sem esse `dart-define`, o cliente recusa a chamada e mostra que o Vision AI Gateway ainda não está configurado. Um resultado `review_pending` não certifica conformidade: a interface mantém o aviso de revisão pendente depois do cálculo.
 
-A versão inicial é a web (`flutter run -d web-server` ou `flutter build web`). Android, iOS, Windows e macOS ficam para a versão seguinte e não fazem parte deste build. A interface abre em inglês. O seletor no cabeçalho muda para português, francês, espanhol ou alemão. Árabe, mandarim e indonésio ficam reservados (`ar`, `zh`, `id`) e não aparecem no seletor. O histórico local exporta JSON com hash e os eventos de uso não guardam valores introduzidos. Um pedido ambíguo ou sem fórmula local pede confirmação. A proposta da IA só produz número quando o motor local recalcula a fórmula ou a expressão. Quota esgotada, rede ausente ou resposta com credencial deixam os cálculos locais disponíveis. Em qualquer língua disponível, um resultado `review_pending` diz que o cálculo não certifica conformidade.
+A versão inicial é a web (`flutter run -d web-server` ou `flutter build web`). Android, iOS, Windows e macOS ficam para a versão seguinte e não fazem parte deste build. A interface abre em inglês. O seletor no cabeçalho muda para português, francês, espanhol ou alemão. Árabe, mandarim e indonésio ficam reservados (`ar`, `zh`, `id`) e não aparecem no seletor. O histórico é só da sessão, em memória. O registo inclui um sha256 e é mostrado no ecrã; não há descarga de ficheiro. Os eventos de uso não guardam valores introduzidos. Um pedido ambíguo ou sem fórmula local pede confirmação. A proposta da IA só produz número quando o motor local recalcula a fórmula ou a expressão. Quota esgotada, rede ausente ou resposta com credencial deixam os cálculos locais disponíveis. Em qualquer língua disponível, um resultado `review_pending` diz que o cálculo não certifica conformidade.
 
 A validação normativa (fase 3) e a publicação nas lojas (fase 4) não fazem parte desta entrega. Apple continua pendente de hardware.

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-IMPL = ROOT / 'outputs/VisionWorldApps/06_Vision_Field_Calc/implementation'
+IMPL = ROOT / 'implementation'
 CATALOG = json.loads((IMPL / 'catalog/formulas_v2.json').read_text(encoding='utf-8'))
 APP = IMPL / 'flutter/vision_field_calc'
 (APP / 'lib/generated').mkdir(parents=True, exist_ok=True)

@@ -3,6 +3,10 @@ import 'generated/formula_engine.g.dart';
 import 'local_expression.dart';
 
 final _execution = RegExp(r'__import__|\bimport\b|eval\s*\(|subprocess|os\.system|Process\.|Runtime\.|open\s*\(');
+final _credentialField = RegExp(
+  r'''['"]?(?:[\w-]*?(?:password|token|secret))['"]?\s*[:=]''',
+  caseSensitive: false,
+);
 
 class ProposalReview {
   final String status;
@@ -15,7 +19,10 @@ class ProposalReview {
 
 bool responseCarriesCredential(String body) {
   final folded = body.toLowerCase();
-  return folded.contains('api_key') || body.contains('sk-') || folded.contains('bearer ');
+  if (folded.contains('api_key') || body.contains('sk-') || folded.contains('bearer ')) {
+    return true;
+  }
+  return _credentialField.hasMatch(body);
 }
 
 bool proposalRequestsExecution(String blob) => _execution.hasMatch(blob);

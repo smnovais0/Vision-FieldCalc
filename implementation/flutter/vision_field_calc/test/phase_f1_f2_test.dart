@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -91,5 +92,33 @@ void main() {
       }),
     );
     expect(leaked.interpret('forma livre'), throwsA(predicate<StateError>((error) => error.message.contains('rejected'))));
+
+    expect(responseCarriesCredential('{"password":"hunter2"}'), isTrue);
+    expect(responseCarriesCredential("token = abc"), isTrue);
+    expect(responseCarriesCredential("'secret':'x'"), isTrue);
+    expect(responseCarriesCredential('calculate the area and the variance'), isFalse);
+    expect(responseCarriesCredential('{"steps":["integrate the sample"]}'), isFalse);
+
+    final insecure = VisionAiGateway(
+      baseUrl: 'http://gateway.test',
+      client: MockClient((request) async => http.Response('{}', 200)),
+    );
+    expect(insecure.interpret('forma livre'), throwsA(predicate<GatewayFailure>((error) => error.code == 'insecure')));
+
+    final loopback = VisionAiGateway(
+      baseUrl: 'http://127.0.0.1:9',
+      client: MockClient((request) async {
+        expect(request.url.host, '127.0.0.1');
+        return http.Response(jsonEncode({'proposed_expression': '1+1'}), 200);
+      }),
+    );
+    expect((await loopback.interpret('soma')).proposedExpression, '1+1');
+
+    final hung = VisionAiGateway(
+      baseUrl: 'https://gateway.test',
+      timeout: const Duration(milliseconds: 20),
+      client: MockClient((request) => Completer<http.Response>().future),
+    );
+    expect(hung.interpret('forma livre'), throwsA(predicate<GatewayFailure>((error) => error.code == 'offline')));
   });
 }

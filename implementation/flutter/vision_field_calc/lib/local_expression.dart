@@ -1,10 +1,20 @@
 import 'dart:math';
 
 class LocalExpression {
+  static const maxSourceLength = 2000;
+  static const maxDepth = 64;
+  static final _blocked = RegExp(r'__import__|\bimport\b|eval\s*\(|subprocess|Process\.|open\s*\(');
+
   final String source;
   const LocalExpression(this.source);
 
   double evaluate(Map<String, double> variables) {
+    if (source.length > maxSourceLength) {
+      throw const FormatException('expression_too_long');
+    }
+    if (_blocked.hasMatch(source)) {
+      throw const FormatException('expression_blocked');
+    }
     final parser = _Parser(_tokenize(source), variables);
     final value = parser.expression();
     if (!parser.atEnd) throw const FormatException('Expressão incompleta ou inválida.');
@@ -53,6 +63,7 @@ class _Parser {
   final List<_Token> tokens;
   final Map<String,double> variables;
   var index=0;
+  var _depth=0;
   _Parser(this.tokens,this.variables);
   bool get atEnd => index==tokens.length;
   bool match(String value) {
@@ -63,50 +74,108 @@ class _Parser {
     if (atEnd) throw const FormatException('Expressão incompleta.');
     return tokens[index++];
   }
+  void _enter() {
+    if (_depth >= LocalExpression.maxDepth) {
+      throw const FormatException('expression_too_deep');
+    }
+    _depth++;
+  }
+  void _leave() {
+    _depth--;
+  }
   double expression() => addSub();
   double addSub() {
     var value=mulDiv();
-    while (!atEnd && (tokens[index].text=='+' || tokens[index].text=='-')) {
-      final op=take().text; final right=mulDiv(); value=op=='+'?value+right:value-right;
+    var extra=0;
+    try {
+      while (!atEnd && (tokens[index].text=='+' || tokens[index].text=='-')) {
+        _enter();
+        extra++;
+        final op=take().text; final right=mulDiv(); value=op=='+'?value+right:value-right;
+      }
+      return value;
+    } finally {
+      for (var i=0; i<extra; i++) {
+        _leave();
+      }
     }
-    return value;
   }
   double mulDiv() {
     var value=power();
-    while (!atEnd && ('*/'.contains(tokens[index].text))) {
-      final op=take().text; final right=power(); value=op=='*'?value*right:value/right;
+    var extra=0;
+    try {
+      while (!atEnd && ('*/'.contains(tokens[index].text))) {
+        _enter();
+        extra++;
+        final op=take().text; final right=power(); value=op=='*'?value*right:value/right;
+      }
+      return value;
+    } finally {
+      for (var i=0; i<extra; i++) {
+        _leave();
+      }
     }
-    return value;
   }
   double power() {
     var value=unary();
-    if (match('^')) value=pow(value,power()).toDouble();
+    if (match('^')) {
+      _enter();
+      try {
+        value=pow(value,power()).toDouble();
+      } finally {
+        _leave();
+      }
+    }
     return value;
   }
   double unary() {
-    if (match('+')) return unary();
-    if (match('-')) return -unary();
+    if (match('+')) {
+      _enter();
+      try {
+        return unary();
+      } finally {
+        _leave();
+      }
+    }
+    if (match('-')) {
+      _enter();
+      try {
+        return -unary();
+      } finally {
+        _leave();
+      }
+    }
     return primary();
   }
   double primary() {
     if (match('(')) {
-      final value=expression();
-      if (!match(')')) throw const FormatException('Falta fechar parênteses.');
-      return value;
+      _enter();
+      try {
+        final value=expression();
+        if (!match(')')) throw const FormatException('Falta fechar parênteses.');
+        return value;
+      } finally {
+        _leave();
+      }
     }
     final token=take();
     if (token.kind=='number') return double.parse(token.text);
     if (token.kind!='id') throw const FormatException('Valor esperado.');
     if (match('(')) {
-      final argument=expression();
-      if (!match(')')) throw const FormatException('Falta fechar a função.');
-      return switch(token.text) {
-        'sqrt' => sqrt(argument), 'sin' => sin(argument), 'cos' => cos(argument),
-        'tan' => tan(argument), 'asin' => asin(argument), 'acos' => acos(argument),
-        'atan' => atan(argument), 'exp' => exp(argument), 'log' => log(argument),
-        'log10' => log(argument)/ln10, 'abs' => argument.abs(),
-        _ => throw FormatException('Função não suportada: ${token.text}'),
-      };
+      _enter();
+      try {
+        final argument=expression();
+        if (!match(')')) throw const FormatException('Falta fechar a função.');
+        return switch(token.text) {
+          'sqrt' => sqrt(argument), 'sin' => sin(argument), 'cos' => cos(argument),
+          'tan' => tan(argument), 'asin' => asin(argument), 'acos' => acos(argument),
+          'atan' => atan(argument), 'exp' => exp(argument), 'log' => log(argument),
+          'log10' => log(argument)/ln10, 'abs' => argument.abs(),
+          _ => throw FormatException('Função não suportada: ${token.text}'),
+        };
+      } finally {
+        _leave();
+      }
     }
     if (token.text=='pi') return pi;
     if (token.text=='e') return e;

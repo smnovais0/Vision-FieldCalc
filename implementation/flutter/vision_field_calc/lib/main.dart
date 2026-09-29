@@ -527,10 +527,6 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           const SizedBox(height: VisionTheme.space12),
           Text(text.present(routingMessage!, statusCode: errorStatus), style: Theme.of(context).textTheme.bodyMedium),
         ],
-        if (error != null) ...[
-          const SizedBox(height: VisionTheme.space12),
-          _error(error!),
-        ],
         if (aiOffer) ...[
           const SizedBox(height: VisionTheme.space16),
           Text(text.aiExplain, style: Theme.of(context).textTheme.bodyMedium),

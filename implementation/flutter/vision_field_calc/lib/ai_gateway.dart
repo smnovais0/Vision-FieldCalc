@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -51,45 +52,54 @@ class GatewayFailure extends StateError {
 
 class VisionAiGateway {
   static const endpoint = String.fromEnvironment('VISION_AI_GATEWAY_URL');
+  static const requestTimeout = Duration(seconds: 20);
 
   final String baseUrl;
   final http.Client? client;
+  final Duration timeout;
 
-  VisionAiGateway({String? baseUrl, this.client}) : baseUrl = baseUrl ?? endpoint;
+  VisionAiGateway({String? baseUrl, this.client, this.timeout = requestTimeout}) : baseUrl = baseUrl ?? endpoint;
 
   Future<AiProposal> interpret(String problem, {String locale = 'en'}) async {
     if (baseUrl.isEmpty) {
       throw GatewayFailure('unconfigured');
+    }
+    if (!_allowsTransport(baseUrl)) {
+      throw GatewayFailure('insecure');
     }
     final httpClient = client ?? http.Client();
     final ownsClient = client == null;
     try {
       final http.Response response;
       try {
-        response = await httpClient.post(
-          Uri.parse('$baseUrl/v1/calc/interpret'),
-          headers: const {
-            'Content-Type': 'application/json',
-            'X-Vision-App': 'vision-field-calc',
-          },
-          body: jsonEncode({
-            'problem': problem,
-            'locale': locale,
-            'mode': 'interpret_only',
-            'required_output': {
-              'formula_id': true,
-              'proposed_expression': true,
-              'display_math': true,
-              'variables': true,
-              'units': true,
-              'assumptions': true,
-              'missing_fields': true,
-              'confidence': true,
-              'steps': true,
-            },
-          }),
-        );
+        response = await httpClient
+            .post(
+              Uri.parse('$baseUrl/v1/calc/interpret'),
+              headers: const {
+                'Content-Type': 'application/json',
+                'X-Vision-App': 'vision-field-calc',
+              },
+              body: jsonEncode({
+                'problem': problem,
+                'locale': locale,
+                'mode': 'interpret_only',
+                'required_output': {
+                  'formula_id': true,
+                  'proposed_expression': true,
+                  'display_math': true,
+                  'variables': true,
+                  'units': true,
+                  'assumptions': true,
+                  'missing_fields': true,
+                  'confidence': true,
+                  'steps': true,
+                },
+              }),
+            )
+            .timeout(timeout);
       } on http.ClientException {
+        throw GatewayFailure('offline');
+      } on TimeoutException {
         throw GatewayFailure('offline');
       }
       if (response.statusCode == 429) {
@@ -112,4 +122,12 @@ class VisionAiGateway {
       if (ownsClient) httpClient.close();
     }
   }
+}
+
+bool _allowsTransport(String baseUrl) {
+  final uri = Uri.tryParse(baseUrl);
+  if (uri == null || uri.host.isEmpty) return false;
+  if (uri.scheme == 'https') return true;
+  final host = uri.host.toLowerCase();
+  return uri.scheme == 'http' && (host == 'localhost' || host == '127.0.0.1');
 }

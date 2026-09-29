@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:vision_field_calc/ai_gateway.dart';
 import 'package:vision_field_calc/catalog_router.dart';
 import 'package:vision_field_calc/generated/formula_engine.g.dart';
+import 'package:vision_field_calc/l10n/app_copy.dart';
+import 'package:vision_field_calc/l10n/app_text.dart';
 import 'package:vision_field_calc/local_expression.dart';
 import 'package:vision_field_calc/local_solvers.dart';
 
@@ -174,6 +176,41 @@ void main() {
     expect(() => LocalExpression('__import__("os")').evaluate({}), throwsFormatException);
     expect(() => LocalExpression('import os').evaluate({}), throwsFormatException);
     expect(() => const LocalExpression('open("/etc/passwd")').evaluate({}), throwsFormatException);
+    expect(() => LocalExpression('eval(1)').evaluate({}), throwsFormatException);
+    expect(() => LocalExpression('subprocess.call()').evaluate({}), throwsFormatException);
+    expect(() => LocalExpression('Process.start()').evaluate({}), throwsFormatException);
+  });
+
+  test('expressões acima de 2000 caracteres ou profundidade 64 são recusadas', () {
+    final atLimit = '${' ' * 1999}1';
+    expect(atLimit.length, 2000);
+    expect(LocalExpression(atLimit).evaluate({}), 1);
+    expect(() => LocalExpression('$atLimit ').evaluate({}), throwsFormatException);
+
+    expect(LocalExpression('${'(' * 64}1${')' * 64}').evaluate({}), 1);
+    expect(() => LocalExpression('${'(' * 65}1${')' * 65}').evaluate({}), throwsFormatException);
+    expect(LocalExpression('0${'+1' * 64}').evaluate({}), 64);
+    expect(() => LocalExpression('0${'+1' * 65}').evaluate({}), throwsFormatException);
+    expect(LocalExpression('${'-' * 64}1').evaluate({}), 1);
+    expect(() => LocalExpression('${'-' * 65}1').evaluate({}), throwsFormatException);
+  });
+
+  test('fr es e de traduzem os títulos dos solucionadores e pt mantém o original', () {
+    final source = File('lib/local_solvers.dart').readAsStringSync();
+    final titles = RegExp(r"CalculationStep\('(?:\d+\. )?([^']+)'")
+        .allMatches(source)
+        .map((match) => match.group(1)!)
+        .toSet();
+    expect(titles, isNotEmpty);
+    for (final title in titles) {
+      expect(appPhrases['en']!.containsKey(title), isTrue, reason: title);
+      for (final code in ['fr', 'es', 'de']) {
+        expect(appPhrases[code]![title], isNotEmpty, reason: '$code $title');
+      }
+      expect(AppText('pt').phrase('1. $title'), title);
+      expect(AppText('fr').phrase('1. $title'), isNot(title));
+    }
+    expect(AppText('pt').phrase('4. Substituir'), 'Substituir');
   });
 
   test('o gateway só usa VISION_AI_GATEWAY_URL e não tem credenciais', () {

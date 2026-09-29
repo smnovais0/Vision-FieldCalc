@@ -70,7 +70,7 @@ void main() {
     expect(find.byKey(const Key('result-value')), findsNothing);
     await tester.tap(find.byKey(const Key('continue-ai')));
     await tester.pump();
-    expect(find.textContaining('not configured'), findsWidgets);
+    expect(find.textContaining('not configured'), findsOneWidget);
     expect(find.byKey(const Key('result-value')), findsNothing);
   });
 

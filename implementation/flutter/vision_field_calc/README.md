@@ -16,6 +16,8 @@ flutter build web
 
 O ecrã abre em inglês. O seletor muda para português, francês, espanhol e alemão. Árabe, mandarim e indonésio ficam reservados e não aparecem no seletor. O catálogo interno continua em português; a pesquisa usa os nomes do catálogo e os nomes traduzidos.
 
+O JSON do catálogo é compilado para `lib/generated/formula_engine.g.dart`. Não é um asset de runtime. O histórico existe apenas em memória durante a sessão: o registo inclui um sha256 e aparece no ecrã, sem descarga de ficheiro. Em Python, `CalculationRouter.route_natural_language` devolve sempre confirmação de IA. Esta aplicação continua a procurar primeiro no catálogo local.
+
 O endpoint do gateway, quando existir uma instalação autorizada, entra só por compilação:
 
 ```text

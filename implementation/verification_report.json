@@ -1,0 +1,25 @@
+{
+  "status": "f0_f1_f2_implemented_f3_f4_open",
+  "formula_count": 129,
+  "menu_count": 10,
+  "special_solver_count": 15,
+  "review_pending_count": 30,
+  "phases": {
+    "F0": "baseline local no código; gate escrito da Direção continua por aprovar",
+    "F1": "interface Flutter web em inglês, com seletor pt/fr/es/de, histórico com hash, unidades de apresentação, testes de domínio e solucionadores",
+    "F2": "proposta com confirmação, recálculo local, recusa de execução, quota, rede e credencial",
+    "F3": "não iniciada: validação normativa e catálogo assinado",
+    "F4": "não iniciada: lojas, builds assinados e Apple Pending Hardware"
+  },
+  "flutter_analyze": "no issues found",
+  "flutter_tests": "catalog, phase_f1_f2 and widget tests passed",
+  "python_test_status": "10/10 passed on 2026-09-28",
+  "limitations": [
+    "Equivalente imperial é só apresentação. O valor interno fica na unidade do catálogo.",
+    "O catálogo não declara galão nem temperatura; essas conversões existem na política e não são aplicadas a fórmulas.",
+    "Pressão imperial não distingue manométrica de absoluta.",
+    "Gateway real depende de VISION_AI_GATEWAY_URL. Sem endpoint não há chamada.",
+    "A versão inicial é web. Android, iOS, Windows e macOS ficam para a versão seguinte e não foram compilados.",
+    "Fase 3 e fase 4 ficam por fazer."
+  ]
+}

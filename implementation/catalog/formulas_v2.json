@@ -1,0 +1,2453 @@
+{
+  "schema_version": "2.0",
+  "catalog_version": "2.0.0",
+  "language": "pt-PT",
+  "menus": [
+    "Áreas",
+    "Volumes",
+    "Fluidos e fluxos",
+    "Eletricidade",
+    "Física",
+    "Estatística",
+    "Equações",
+    "Limites e cálculo",
+    "Estruturas e equipamentos",
+    "Field Report"
+  ],
+  "formula_count": 129,
+  "formulas": [
+    {
+      "id": "AREA_SQUARE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Quadrado",
+      "expression": "a**2",
+      "inputs": [
+        "a"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "a>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_RECTANGLE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Retângulo",
+      "expression": "length*width",
+      "inputs": [
+        "length",
+        "width"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "length>0",
+        "width>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_TRIANGLE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Triângulo por base e altura",
+      "expression": "base*height/2",
+      "inputs": [
+        "base",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "base>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_TRIANGLE_HERON",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Triângulo por três lados",
+      "expression": "sqrt(((a+b+c)/2)*(((a+b+c)/2)-a)*(((a+b+c)/2)-b)*(((a+b+c)/2)-c))",
+      "inputs": [
+        "a",
+        "b",
+        "c"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "a>0",
+        "b>0",
+        "c>0",
+        "a+b>c",
+        "a+c>b",
+        "b+c>a"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_EQUILATERAL_TRIANGLE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Triângulo equilátero",
+      "expression": "sqrt(3)*a**2/4",
+      "inputs": [
+        "a"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "a>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_PARALLELOGRAM",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Paralelogramo",
+      "expression": "base*height",
+      "inputs": [
+        "base",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "base>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_RHOMBUS",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Losango pelas diagonais",
+      "expression": "d1*d2/2",
+      "inputs": [
+        "d1",
+        "d2"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "d1>0",
+        "d2>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_KITE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Deltoide pelas diagonais",
+      "expression": "d1*d2/2",
+      "inputs": [
+        "d1",
+        "d2"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "d1>0",
+        "d2>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_TRAPEZOID",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Trapézio",
+      "expression": "(base1+base2)*height/2",
+      "inputs": [
+        "base1",
+        "base2",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "base1>0",
+        "base2>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_CIRCLE_RADIUS",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Círculo pelo raio",
+      "expression": "pi*r**2",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_CIRCLE_DIAMETER",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Círculo pelo diâmetro",
+      "expression": "pi*d**2/4",
+      "inputs": [
+        "d"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "d>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_SEMICIRCLE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Semicírculo",
+      "expression": "pi*r**2/2",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_CIRCULAR_SECTOR",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Setor circular",
+      "expression": "pi*r**2*angle_deg/360",
+      "inputs": [
+        "r",
+        "angle_deg"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0",
+        "angle_deg>=0",
+        "angle_deg<=360"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_ELLIPSE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Elipse",
+      "expression": "pi*a*b",
+      "inputs": [
+        "a",
+        "b"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "a>0",
+        "b>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_ANNULUS",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Coroa circular",
+      "expression": "pi*(outer_r**2-inner_r**2)",
+      "inputs": [
+        "outer_r",
+        "inner_r"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "outer_r>0",
+        "inner_r>=0",
+        "outer_r>inner_r"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "AREA_REGULAR_POLYGON",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Polígono regular",
+      "expression": "n*side**2/(4*tan(pi/n))",
+      "inputs": [
+        "n",
+        "side"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "n>=3",
+        "integer(n)",
+        "side>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_CUBE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área total do cubo",
+      "expression": "6*a**2",
+      "inputs": [
+        "a"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "a>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_CUBOID",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área total do prisma retangular",
+      "expression": "2*(length*width+length*height+width*height)",
+      "inputs": [
+        "length",
+        "width",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "length>0",
+        "width>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_CYLINDER",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área total do cilindro",
+      "expression": "2*pi*r*(r+height)",
+      "inputs": [
+        "r",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_CONE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área total do cone",
+      "expression": "pi*r*(r+sqrt(r**2+height**2))",
+      "inputs": [
+        "r",
+        "height"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_SPHERE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área da esfera",
+      "expression": "4*pi*r**2",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "SURFACE_HEMISPHERE",
+      "version": "2.0.0",
+      "menu": "Áreas",
+      "name_pt": "Área total da semiesfera",
+      "expression": "3*pi*r**2",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u²",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_CUBE",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Cubo",
+      "expression": "a**3",
+      "inputs": [
+        "a"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "a>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_CUBOID",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Prisma retangular",
+      "expression": "length*width*height",
+      "inputs": [
+        "length",
+        "width",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "length>0",
+        "width>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_PRISM",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Prisma por área da base",
+      "expression": "base_area*height",
+      "inputs": [
+        "base_area",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "base_area>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_CYLINDER",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Cilindro",
+      "expression": "pi*r**2*height",
+      "inputs": [
+        "r",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "r>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_HOLLOW_CYLINDER",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Cilindro oco",
+      "expression": "pi*(outer_r**2-inner_r**2)*height",
+      "inputs": [
+        "outer_r",
+        "inner_r",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "outer_r>inner_r",
+        "inner_r>=0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_CONE",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Cone",
+      "expression": "pi*r**2*height/3",
+      "inputs": [
+        "r",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "r>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_CONE_FRUSTUM",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Tronco de cone",
+      "expression": "pi*height*(r1**2+r1*r2+r2**2)/3",
+      "inputs": [
+        "r1",
+        "r2",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "r1>=0",
+        "r2>=0",
+        "r1+r2>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_SPHERE",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Esfera",
+      "expression": "4*pi*r**3/3",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_HEMISPHERE",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Semiesfera",
+      "expression": "2*pi*r**3/3",
+      "inputs": [
+        "r"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_PYRAMID",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Pirâmide",
+      "expression": "base_area*height/3",
+      "inputs": [
+        "base_area",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "base_area>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_PYRAMID_FRUSTUM",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Tronco de pirâmide",
+      "expression": "height*(area1+area2+sqrt(area1*area2))/3",
+      "inputs": [
+        "area1",
+        "area2",
+        "height"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "area1>=0",
+        "area2>=0",
+        "area1+area2>0",
+        "height>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_ELLIPSOID",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Elipsoide",
+      "expression": "4*pi*a*b*c/3",
+      "inputs": [
+        "a",
+        "b",
+        "c"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "a>0",
+        "b>0",
+        "c>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "VOL_TORUS",
+      "version": "2.0.0",
+      "menu": "Volumes",
+      "name_pt": "Toro",
+      "expression": "2*pi**2*major_r*minor_r**2",
+      "inputs": [
+        "major_r",
+        "minor_r"
+      ],
+      "output_unit": "u³",
+      "conditions": [
+        "major_r>minor_r",
+        "minor_r>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLOW_VOLUME_TIME",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Caudal volumétrico",
+      "expression": "volume/time",
+      "inputs": [
+        "volume",
+        "time"
+      ],
+      "output_unit": "m³/s",
+      "conditions": [
+        "volume>=0",
+        "time>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLOW_VELOCITY",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Velocidade média em conduta",
+      "expression": "flow/area",
+      "inputs": [
+        "flow",
+        "area"
+      ],
+      "output_unit": "m/s",
+      "conditions": [
+        "flow>=0",
+        "area>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLOW_MASS",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Caudal mássico",
+      "expression": "density*flow",
+      "inputs": [
+        "density",
+        "flow"
+      ],
+      "output_unit": "kg/s",
+      "conditions": [
+        "density>0",
+        "flow>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLOW_PIPE_AREA",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Área interna de tubo",
+      "expression": "pi*diameter**2/4",
+      "inputs": [
+        "diameter"
+      ],
+      "output_unit": "m²",
+      "conditions": [
+        "diameter>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLOW_CONTINUITY",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Continuidade entre secções",
+      "expression": "area1*velocity1/area2",
+      "inputs": [
+        "area1",
+        "velocity1",
+        "area2"
+      ],
+      "output_unit": "m/s",
+      "conditions": [
+        "area1>0",
+        "area2>0",
+        "velocity1>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_HYDROSTATIC",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Pressão hidrostática",
+      "expression": "density*g*height",
+      "inputs": [
+        "density",
+        "g",
+        "height"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "density>0",
+        "g>0",
+        "height>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_PRESSURE_HEAD",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Altura de pressão",
+      "expression": "pressure/(density*g)",
+      "inputs": [
+        "pressure",
+        "density",
+        "g"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "density>0",
+        "g>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_REYNOLDS",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Número de Reynolds",
+      "expression": "density*velocity*diameter/dynamic_viscosity",
+      "inputs": [
+        "density",
+        "velocity",
+        "diameter",
+        "dynamic_viscosity"
+      ],
+      "output_unit": "1",
+      "conditions": [
+        "density>0",
+        "velocity>=0",
+        "diameter>0",
+        "dynamic_viscosity>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_DARCY_HEADLOSS",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Perda de carga Darcy Weisbach",
+      "expression": "friction_factor*(length/diameter)*velocity**2/(2*g)",
+      "inputs": [
+        "friction_factor",
+        "length",
+        "diameter",
+        "velocity",
+        "g"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "friction_factor>=0",
+        "length>=0",
+        "diameter>0",
+        "velocity>=0",
+        "g>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_DARCY_PRESSURE_DROP",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Queda de pressão Darcy Weisbach",
+      "expression": "friction_factor*(length/diameter)*density*velocity**2/2",
+      "inputs": [
+        "friction_factor",
+        "length",
+        "diameter",
+        "density",
+        "velocity"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "friction_factor>=0",
+        "length>=0",
+        "diameter>0",
+        "density>0",
+        "velocity>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_HAZEN_WILLIAMS",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Perda de carga Hazen Williams SI",
+      "expression": "10.67*length*flow**1.852/(coefficient**1.852*diameter**4.87)",
+      "inputs": [
+        "length",
+        "flow",
+        "coefficient",
+        "diameter"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "length>=0",
+        "flow>=0",
+        "coefficient>0",
+        "diameter>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_MANNING",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Caudal em canal pela fórmula de Manning",
+      "expression": "roughness_inv*area*hydraulic_radius**(2/3)*slope**0.5",
+      "inputs": [
+        "roughness_inv",
+        "area",
+        "hydraulic_radius",
+        "slope"
+      ],
+      "output_unit": "m³/s",
+      "conditions": [
+        "roughness_inv>0",
+        "area>0",
+        "hydraulic_radius>0",
+        "slope>=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "roughness_inv=1/n; confirmar sistema de unidades e coeficiente"
+    },
+    {
+      "id": "FLUID_ORIFICE",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Descarga por orifício",
+      "expression": "discharge_coefficient*area*sqrt(2*g*head)",
+      "inputs": [
+        "discharge_coefficient",
+        "area",
+        "g",
+        "head"
+      ],
+      "output_unit": "m³/s",
+      "conditions": [
+        "discharge_coefficient>0",
+        "area>0",
+        "g>0",
+        "head>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_PUMP_POWER",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Potência hidráulica de bomba",
+      "expression": "density*g*flow*head/efficiency",
+      "inputs": [
+        "density",
+        "g",
+        "flow",
+        "head",
+        "efficiency"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "density>0",
+        "g>0",
+        "flow>=0",
+        "head>=0",
+        "efficiency>0",
+        "efficiency<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "FLUID_BERNOULLI_HEAD",
+      "version": "2.0.0",
+      "menu": "Fluidos e fluxos",
+      "name_pt": "Carga total de Bernoulli numa secção",
+      "expression": "pressure/(density*g)+velocity**2/(2*g)+elevation",
+      "inputs": [
+        "pressure",
+        "density",
+        "g",
+        "velocity",
+        "elevation"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "density>0",
+        "g>0",
+        "velocity>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_OHM_CURRENT",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Lei de Ohm corrente",
+      "expression": "voltage/resistance",
+      "inputs": [
+        "voltage",
+        "resistance"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "resistance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_OHM_VOLTAGE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Lei de Ohm tensão",
+      "expression": "current*resistance",
+      "inputs": [
+        "current",
+        "resistance"
+      ],
+      "output_unit": "V",
+      "conditions": [
+        "resistance>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_OHM_RESISTANCE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Lei de Ohm resistência",
+      "expression": "voltage/current",
+      "inputs": [
+        "voltage",
+        "current"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "current!=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_DC_POWER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência DC",
+      "expression": "voltage*current",
+      "inputs": [
+        "voltage",
+        "current"
+      ],
+      "output_unit": "W",
+      "conditions": [],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_POWER_I2R",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência por corrente e resistência",
+      "expression": "current**2*resistance",
+      "inputs": [
+        "current",
+        "resistance"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "resistance>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_POWER_V2R",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência por tensão e resistência",
+      "expression": "voltage**2/resistance",
+      "inputs": [
+        "voltage",
+        "resistance"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "resistance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_ENERGY",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Energia elétrica",
+      "expression": "power*time",
+      "inputs": [
+        "power",
+        "time"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "time>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_CHARGE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Carga elétrica",
+      "expression": "current*time",
+      "inputs": [
+        "current",
+        "time"
+      ],
+      "output_unit": "C",
+      "conditions": [
+        "time>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_RESISTANCE_SERIES",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Duas resistências em série",
+      "expression": "r1+r2",
+      "inputs": [
+        "r1",
+        "r2"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "r1>=0",
+        "r2>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_RESISTANCE_PARALLEL",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Duas resistências em paralelo",
+      "expression": "1/(1/r1+1/r2)",
+      "inputs": [
+        "r1",
+        "r2"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "r1>0",
+        "r2>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_VOLTAGE_DIVIDER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Divisor de tensão",
+      "expression": "vin*r2/(r1+r2)",
+      "inputs": [
+        "vin",
+        "r1",
+        "r2"
+      ],
+      "output_unit": "V",
+      "conditions": [
+        "r1>=0",
+        "r2>=0",
+        "r1+r2>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_CAPACITOR_ENERGY",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Energia em condensador",
+      "expression": "capacitance*voltage**2/2",
+      "inputs": [
+        "capacitance",
+        "voltage"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "capacitance>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_CAPACITIVE_REACTANCE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Reatância capacitiva",
+      "expression": "1/(2*pi*frequency*capacitance)",
+      "inputs": [
+        "frequency",
+        "capacitance"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "frequency>0",
+        "capacitance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_INDUCTIVE_REACTANCE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Reatância indutiva",
+      "expression": "2*pi*frequency*inductance",
+      "inputs": [
+        "frequency",
+        "inductance"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "frequency>=0",
+        "inductance>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_RLC_IMPEDANCE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Impedância série RLC",
+      "expression": "sqrt(resistance**2+(2*pi*frequency*inductance-1/(2*pi*frequency*capacitance))**2)",
+      "inputs": [
+        "resistance",
+        "frequency",
+        "inductance",
+        "capacitance"
+      ],
+      "output_unit": "ohm",
+      "conditions": [
+        "resistance>=0",
+        "frequency>0",
+        "inductance>=0",
+        "capacitance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_RESONANCE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Frequência de ressonância LC",
+      "expression": "1/(2*pi*sqrt(inductance*capacitance))",
+      "inputs": [
+        "inductance",
+        "capacitance"
+      ],
+      "output_unit": "Hz",
+      "conditions": [
+        "inductance>0",
+        "capacitance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_AC1_REAL_POWER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência ativa AC monofásica",
+      "expression": "voltage*current*power_factor",
+      "inputs": [
+        "voltage",
+        "current",
+        "power_factor"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "voltage>=0",
+        "current>=0",
+        "power_factor>=0",
+        "power_factor<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_AC1_CURRENT",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Corrente AC monofásica",
+      "expression": "power/(voltage*power_factor*efficiency)",
+      "inputs": [
+        "power",
+        "voltage",
+        "power_factor",
+        "efficiency"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "power>=0",
+        "voltage>0",
+        "power_factor>0",
+        "power_factor<=1",
+        "efficiency>0",
+        "efficiency<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_AC3_REAL_POWER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência ativa AC trifásica",
+      "expression": "sqrt(3)*line_voltage*line_current*power_factor",
+      "inputs": [
+        "line_voltage",
+        "line_current",
+        "power_factor"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "line_voltage>=0",
+        "line_current>=0",
+        "power_factor>=0",
+        "power_factor<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_AC3_CURRENT",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Corrente AC trifásica",
+      "expression": "power/(sqrt(3)*line_voltage*power_factor*efficiency)",
+      "inputs": [
+        "power",
+        "line_voltage",
+        "power_factor",
+        "efficiency"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "power>=0",
+        "line_voltage>0",
+        "power_factor>0",
+        "power_factor<=1",
+        "efficiency>0",
+        "efficiency<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_APPARENT_POWER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência aparente",
+      "expression": "voltage*current",
+      "inputs": [
+        "voltage",
+        "current"
+      ],
+      "output_unit": "VA",
+      "conditions": [
+        "voltage>=0",
+        "current>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_REACTIVE_POWER",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Potência reativa",
+      "expression": "apparent_power*sqrt(1-power_factor**2)",
+      "inputs": [
+        "apparent_power",
+        "power_factor"
+      ],
+      "output_unit": "var",
+      "conditions": [
+        "apparent_power>=0",
+        "power_factor>=0",
+        "power_factor<=1"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_TRANSFORMER_VOLTAGE",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Relação de transformação de tensão",
+      "expression": "primary_voltage*secondary_turns/primary_turns",
+      "inputs": [
+        "primary_voltage",
+        "primary_turns",
+        "secondary_turns"
+      ],
+      "output_unit": "V",
+      "conditions": [
+        "primary_turns>0",
+        "secondary_turns>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_VDROP_DC",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Queda de tensão DC ou monofásica resistiva",
+      "expression": "2*length*current*resistivity/area",
+      "inputs": [
+        "length",
+        "current",
+        "resistivity",
+        "area"
+      ],
+      "output_unit": "V",
+      "conditions": [
+        "length>=0",
+        "current>=0",
+        "resistivity>0",
+        "area>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Fatores térmicos e de instalação são externos"
+    },
+    {
+      "id": "ELEC_VDROP_AC3",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Queda de tensão trifásica simplificada",
+      "expression": "sqrt(3)*length*current*(resistance_per_length*power_factor+reactance_per_length*sqrt(1-power_factor**2))",
+      "inputs": [
+        "length",
+        "current",
+        "resistance_per_length",
+        "reactance_per_length",
+        "power_factor"
+      ],
+      "output_unit": "V",
+      "conditions": [
+        "length>=0",
+        "current>=0",
+        "resistance_per_length>=0",
+        "reactance_per_length>=0",
+        "power_factor>=0",
+        "power_factor<=1"
+      ],
+      "validation_status": "review_pending",
+      "notes": ""
+    },
+    {
+      "id": "ELEC_DESIGN_CURRENT",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Corrente de projeto com fatores",
+      "expression": "load_current/(correction_factor*grouping_factor*temperature_factor)",
+      "inputs": [
+        "load_current",
+        "correction_factor",
+        "grouping_factor",
+        "temperature_factor"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "load_current>=0",
+        "correction_factor>0",
+        "grouping_factor>0",
+        "temperature_factor>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Os fatores e tabelas vêm da norma/edição escolhida pelo utilizador"
+    },
+    {
+      "id": "ELEC_PROTECTION_MIN_RATING",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Classificação mínima teórica da proteção",
+      "expression": "design_current*safety_factor",
+      "inputs": [
+        "design_current",
+        "safety_factor"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "design_current>=0",
+        "safety_factor>=1"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Não seleciona automaticamente um calibre normalizado nem prova coordenação"
+    },
+    {
+      "id": "ELEC_SHORT_CIRCUIT",
+      "version": "2.0.0",
+      "menu": "Eletricidade",
+      "name_pt": "Corrente de curto-circuito por impedância",
+      "expression": "voltage/impedance",
+      "inputs": [
+        "voltage",
+        "impedance"
+      ],
+      "output_unit": "A",
+      "conditions": [
+        "impedance>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_SPEED",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Velocidade média",
+      "expression": "distance/time",
+      "inputs": [
+        "distance",
+        "time"
+      ],
+      "output_unit": "m/s",
+      "conditions": [
+        "time>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_ACCELERATION",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Aceleração média",
+      "expression": "(final_velocity-initial_velocity)/time",
+      "inputs": [
+        "final_velocity",
+        "initial_velocity",
+        "time"
+      ],
+      "output_unit": "m/s²",
+      "conditions": [
+        "time>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_KINEMATICS_V",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Velocidade com aceleração constante",
+      "expression": "initial_velocity+acceleration*time",
+      "inputs": [
+        "initial_velocity",
+        "acceleration",
+        "time"
+      ],
+      "output_unit": "m/s",
+      "conditions": [
+        "time>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_KINEMATICS_S",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Deslocamento com aceleração constante",
+      "expression": "initial_velocity*time+acceleration*time**2/2",
+      "inputs": [
+        "initial_velocity",
+        "acceleration",
+        "time"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "time>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_FORCE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Segunda lei de Newton",
+      "expression": "mass*acceleration",
+      "inputs": [
+        "mass",
+        "acceleration"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "mass>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_WEIGHT",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Peso",
+      "expression": "mass*g",
+      "inputs": [
+        "mass",
+        "g"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "mass>=0",
+        "g>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_WORK",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Trabalho de força constante",
+      "expression": "force*distance*cos(angle_deg*pi/180)",
+      "inputs": [
+        "force",
+        "distance",
+        "angle_deg"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "distance>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_KINETIC_ENERGY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Energia cinética",
+      "expression": "mass*velocity**2/2",
+      "inputs": [
+        "mass",
+        "velocity"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "mass>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_POTENTIAL_ENERGY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Energia potencial gravítica",
+      "expression": "mass*g*height",
+      "inputs": [
+        "mass",
+        "g",
+        "height"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "mass>=0",
+        "g>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_POWER",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Potência média",
+      "expression": "work/time",
+      "inputs": [
+        "work",
+        "time"
+      ],
+      "output_unit": "W",
+      "conditions": [
+        "time>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_MOMENTUM",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Quantidade de movimento",
+      "expression": "mass*velocity",
+      "inputs": [
+        "mass",
+        "velocity"
+      ],
+      "output_unit": "kg·m/s",
+      "conditions": [
+        "mass>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_IMPULSE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Impulso",
+      "expression": "force*time",
+      "inputs": [
+        "force",
+        "time"
+      ],
+      "output_unit": "N·s",
+      "conditions": [
+        "time>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_DENSITY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Densidade",
+      "expression": "mass/volume",
+      "inputs": [
+        "mass",
+        "volume"
+      ],
+      "output_unit": "kg/m³",
+      "conditions": [
+        "mass>=0",
+        "volume>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_PRESSURE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Pressão média",
+      "expression": "force/area",
+      "inputs": [
+        "force",
+        "area"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "area>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_TORQUE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Momento de força",
+      "expression": "force*lever_arm*sin(angle_deg*pi/180)",
+      "inputs": [
+        "force",
+        "lever_arm",
+        "angle_deg"
+      ],
+      "output_unit": "N·m",
+      "conditions": [
+        "lever_arm>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_CENTRIPETAL_FORCE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Força centrípeta",
+      "expression": "mass*velocity**2/radius",
+      "inputs": [
+        "mass",
+        "velocity",
+        "radius"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "mass>=0",
+        "radius>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_GRAVITATION",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Gravitação universal",
+      "expression": "G*mass1*mass2/distance**2",
+      "inputs": [
+        "G",
+        "mass1",
+        "mass2",
+        "distance"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "G>0",
+        "mass1>=0",
+        "mass2>=0",
+        "distance>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_HOOKE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Lei de Hooke",
+      "expression": "spring_constant*extension",
+      "inputs": [
+        "spring_constant",
+        "extension"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "spring_constant>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_FREQUENCY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Frequência por período",
+      "expression": "1/period",
+      "inputs": [
+        "period"
+      ],
+      "output_unit": "Hz",
+      "conditions": [
+        "period>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_WAVE_SPEED",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Velocidade de onda",
+      "expression": "frequency*wavelength",
+      "inputs": [
+        "frequency",
+        "wavelength"
+      ],
+      "output_unit": "m/s",
+      "conditions": [
+        "frequency>=0",
+        "wavelength>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_IDEAL_GAS_PRESSURE",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Pressão de gás ideal",
+      "expression": "moles*gas_constant*temperature/volume",
+      "inputs": [
+        "moles",
+        "gas_constant",
+        "temperature",
+        "volume"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "moles>=0",
+        "gas_constant>0",
+        "temperature>0",
+        "volume>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_SENSIBLE_HEAT",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Calor sensível",
+      "expression": "mass*specific_heat*temperature_change",
+      "inputs": [
+        "mass",
+        "specific_heat",
+        "temperature_change"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "mass>=0",
+        "specific_heat>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_LINEAR_EXPANSION",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Dilatação linear",
+      "expression": "coefficient*initial_length*temperature_change",
+      "inputs": [
+        "coefficient",
+        "initial_length",
+        "temperature_change"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "coefficient>=0",
+        "initial_length>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_EFFICIENCY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Eficiência",
+      "expression": "useful_output/input_energy",
+      "inputs": [
+        "useful_output",
+        "input_energy"
+      ],
+      "output_unit": "1",
+      "conditions": [
+        "input_energy>0",
+        "useful_output>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_PHOTON_ENERGY",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Energia de fotão",
+      "expression": "planck*frequency",
+      "inputs": [
+        "planck",
+        "frequency"
+      ],
+      "output_unit": "J",
+      "conditions": [
+        "planck>0",
+        "frequency>=0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_SNELL",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Ângulo refratado pela lei de Snell",
+      "expression": "asin(refractive_index1*sin(angle1_deg*pi/180)/refractive_index2)*180/pi",
+      "inputs": [
+        "refractive_index1",
+        "refractive_index2",
+        "angle1_deg"
+      ],
+      "output_unit": "deg",
+      "conditions": [
+        "refractive_index1>0",
+        "refractive_index2>0"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "PHYS_THIN_LENS",
+      "version": "2.0.0",
+      "menu": "Física",
+      "name_pt": "Distância de imagem em lente delgada",
+      "expression": "1/(1/focal_length-1/object_distance)",
+      "inputs": [
+        "focal_length",
+        "object_distance"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "focal_length!=0",
+        "object_distance!=0",
+        "1/focal_length!=1/object_distance"
+      ],
+      "validation_status": "implemented",
+      "notes": ""
+    },
+    {
+      "id": "STRUCT_NORMAL_STRESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Tensão normal média",
+      "expression": "force/area",
+      "inputs": [
+        "force",
+        "area"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "area>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_STRAIN",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Extensão normal",
+      "expression": "length_change/original_length",
+      "inputs": [
+        "length_change",
+        "original_length"
+      ],
+      "output_unit": "1",
+      "conditions": [
+        "original_length>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_HOOKE_STRESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Tensão elástica",
+      "expression": "young_modulus*strain",
+      "inputs": [
+        "young_modulus",
+        "strain"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "young_modulus>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_AXIAL_DEFORMATION",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Deformação axial de barra",
+      "expression": "force*length/(area*young_modulus)",
+      "inputs": [
+        "force",
+        "length",
+        "area",
+        "young_modulus"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "length>=0",
+        "area>0",
+        "young_modulus>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_BENDING_STRESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Tensão de flexão",
+      "expression": "moment*distance_to_extreme_fibre/second_moment_area",
+      "inputs": [
+        "moment",
+        "distance_to_extreme_fibre",
+        "second_moment_area"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "distance_to_extreme_fibre>=0",
+        "second_moment_area>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_RECT_I",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Segundo momento de área retangular",
+      "expression": "width*height**3/12",
+      "inputs": [
+        "width",
+        "height"
+      ],
+      "output_unit": "m⁴",
+      "conditions": [
+        "width>0",
+        "height>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_CIRCLE_I",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Segundo momento de área circular",
+      "expression": "pi*diameter**4/64",
+      "inputs": [
+        "diameter"
+      ],
+      "output_unit": "m⁴",
+      "conditions": [
+        "diameter>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_BEAM_REACTION_POINT",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Reação esquerda em viga simplesmente apoiada",
+      "expression": "load*(span-load_position)/span",
+      "inputs": [
+        "load",
+        "span",
+        "load_position"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "span>0",
+        "load_position>=0",
+        "load_position<=span"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_BEAM_MMAX_UDL",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Momento máximo em viga simplesmente apoiada com carga uniforme",
+      "expression": "uniform_load*span**2/8",
+      "inputs": [
+        "uniform_load",
+        "span"
+      ],
+      "output_unit": "N·m",
+      "conditions": [
+        "uniform_load>=0",
+        "span>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_BEAM_DEFLECTION_UDL",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Flecha máxima com carga uniforme",
+      "expression": "5*uniform_load*span**4/(384*young_modulus*second_moment_area)",
+      "inputs": [
+        "uniform_load",
+        "span",
+        "young_modulus",
+        "second_moment_area"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "uniform_load>=0",
+        "span>0",
+        "young_modulus>0",
+        "second_moment_area>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_EULER_BUCKLING",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Carga crítica de Euler",
+      "expression": "pi**2*young_modulus*second_moment_area/(effective_length_factor*length)**2",
+      "inputs": [
+        "young_modulus",
+        "second_moment_area",
+        "effective_length_factor",
+        "length"
+      ],
+      "output_unit": "N",
+      "conditions": [
+        "young_modulus>0",
+        "second_moment_area>0",
+        "effective_length_factor>0",
+        "length>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "STRUCT_SAFETY_FACTOR",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Fator de segurança",
+      "expression": "capacity/demand",
+      "inputs": [
+        "capacity",
+        "demand"
+      ],
+      "output_unit": "1",
+      "conditions": [
+        "capacity>=0",
+        "demand>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "PRESSURE_HOOP_STRESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Tensão circunferencial de parede fina",
+      "expression": "pressure*diameter/(2*thickness)",
+      "inputs": [
+        "pressure",
+        "diameter",
+        "thickness"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "diameter>0",
+        "thickness>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "PRESSURE_LONG_STRESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Tensão longitudinal de parede fina",
+      "expression": "pressure*diameter/(4*thickness)",
+      "inputs": [
+        "pressure",
+        "diameter",
+        "thickness"
+      ],
+      "output_unit": "Pa",
+      "conditions": [
+        "diameter>0",
+        "thickness>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "PRESSURE_REQUIRED_THICKNESS",
+      "version": "2.0.0",
+      "menu": "Estruturas e equipamentos",
+      "name_pt": "Espessura por equação parametrizada",
+      "expression": "pressure*diameter/(2*allowable_stress*joint_efficiency-pressure*coefficient_y)+corrosion_allowance",
+      "inputs": [
+        "pressure",
+        "diameter",
+        "allowable_stress",
+        "joint_efficiency",
+        "coefficient_y",
+        "corrosion_allowance"
+      ],
+      "output_unit": "m",
+      "conditions": [
+        "pressure>=0",
+        "diameter>0",
+        "allowable_stress>0",
+        "joint_efficiency>0",
+        "joint_efficiency<=1",
+        "2*allowable_stress*joint_efficiency-pressure*coefficient_y>0",
+        "corrosion_allowance>=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Verificar modelo, apoios, regime, norma, edição, coeficientes e unidades antes de decisão real"
+    },
+    {
+      "id": "FR_ABSOLUTE_DEVIATION",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Desvio absoluto face ao nominal",
+      "expression": "measured-nominal",
+      "inputs": [
+        "measured",
+        "nominal"
+      ],
+      "output_unit": "u",
+      "conditions": [],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_PERCENT_DEVIATION",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Desvio percentual face ao nominal",
+      "expression": "100*(measured-nominal)/nominal",
+      "inputs": [
+        "measured",
+        "nominal"
+      ],
+      "output_unit": "%",
+      "conditions": [
+        "nominal!=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_TOLERANCE_UTILIZATION",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Utilização da tolerância",
+      "expression": "100*abs(measured-nominal)/tolerance",
+      "inputs": [
+        "measured",
+        "nominal",
+        "tolerance"
+      ],
+      "output_unit": "%",
+      "conditions": [
+        "tolerance>0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_AVERAGE_READING",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Média de quatro leituras",
+      "expression": "(reading1+reading2+reading3+reading4)/4",
+      "inputs": [
+        "reading1",
+        "reading2",
+        "reading3",
+        "reading4"
+      ],
+      "output_unit": "u",
+      "conditions": [],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_LINEAR_INTERPOLATION",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Interpolação linear",
+      "expression": "y1+(x-x1)*(y2-y1)/(x2-x1)",
+      "inputs": [
+        "x",
+        "x1",
+        "x2",
+        "y1",
+        "y2"
+      ],
+      "output_unit": "u",
+      "conditions": [
+        "x2!=x1"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_SLOPE_PERCENT",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Inclinação percentual",
+      "expression": "100*rise/run",
+      "inputs": [
+        "rise",
+        "run"
+      ],
+      "output_unit": "%",
+      "conditions": [
+        "run!=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_SLOPE_ANGLE",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Ângulo de inclinação",
+      "expression": "atan(rise/run)*180/pi",
+      "inputs": [
+        "rise",
+        "run"
+      ],
+      "output_unit": "deg",
+      "conditions": [
+        "run!=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_RECTANGULAR_QUANTITY",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Quantidade por área retangular",
+      "expression": "length*width*rate",
+      "inputs": [
+        "length",
+        "width",
+        "rate"
+      ],
+      "output_unit": "quantidade",
+      "conditions": [
+        "length>=0",
+        "width>=0",
+        "rate>=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    },
+    {
+      "id": "FR_VOLUME_QUANTITY",
+      "version": "2.0.0",
+      "menu": "Field Report",
+      "name_pt": "Quantidade por volume",
+      "expression": "volume*rate",
+      "inputs": [
+        "volume",
+        "rate"
+      ],
+      "output_unit": "quantidade",
+      "conditions": [
+        "volume>=0",
+        "rate>=0"
+      ],
+      "validation_status": "review_pending",
+      "notes": "Confirmar unidade, tolerância, método de medição e critério do tipo de inspeção selecionado"
+    }
+  ],
+  "special_solvers": [
+    "statistics.describe",
+    "statistics.weighted_mean",
+    "statistics.linear_regression",
+    "statistics.pearson",
+    "statistics.percentile",
+    "statistics.binomial",
+    "equations.polynomial_roots",
+    "equations.linear_system",
+    "equations.bisection",
+    "equations.newton",
+    "calculus.limit",
+    "calculus.derivative",
+    "calculus.integral_simpson",
+    "differential.rk4_first_order",
+    "differential.rk4_second_order"
+  ]
+}

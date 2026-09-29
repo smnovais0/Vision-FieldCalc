@@ -10,6 +10,8 @@ import 'catalog_router.dart';
 import 'generated/formula_engine.g.dart';
 import 'local_solvers.dart';
 import 'math_step_view.dart';
+import 'l10n/app_text.dart';
+import 'l10n/formula_names.dart';
 import 'privacy_analytics.dart';
 import 'proposal_guard.dart';
 import 'solver_workspace.dart';
@@ -18,24 +20,42 @@ import 'widgets/vision_widgets.dart';
 
 void main() => runApp(const VisionFieldCalcApp());
 
-class VisionFieldCalcApp extends StatelessWidget {
+class VisionFieldCalcApp extends StatefulWidget {
   final VisionAiGateway? gateway;
   const VisionFieldCalcApp({super.key, this.gateway});
 
   @override
+  State<VisionFieldCalcApp> createState() => _VisionFieldCalcAppState();
+}
+
+class _VisionFieldCalcAppState extends State<VisionFieldCalcApp> {
+  Locale _locale = const Locale('en');
+
+  void _selectLocale(Locale locale) {
+    if (AppText.plannedLanguageCodes.contains(locale.languageCode)) return;
+    if (!AppText.pickerLocales.any((item) => item == locale)) return;
+    setState(() => _locale = locale);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Vision Field Calc',
-      debugShowCheckedModeBanner: false,
-      theme: VisionTheme.light,
-      locale: const Locale('pt', 'PT'),
-      supportedLocales: const [Locale('pt', 'PT')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      home: CalculatorHome(gateway: gateway),
+    final text = AppText(_locale.languageCode);
+    return AppScope(
+      text: text,
+      onLocale: _selectLocale,
+      child: MaterialApp(
+        title: 'Vision Field Calc',
+        debugShowCheckedModeBanner: false,
+        theme: VisionTheme.light,
+        locale: _locale,
+        supportedLocales: AppText.supported,
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: CalculatorHome(gateway: widget.gateway),
+      ),
     );
   }
 }
@@ -69,7 +89,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   bool aiOffer = false;
   bool catalogOpen = false;
   bool historyOpen = false;
-  String engineMode = 'Cálculo local';
+  String engineMode = 'local';
+  int? errorStatus;
   final history = <HistoryEntry>[];
   final _doomed = <TextEditingController>{};
   final _inputSnapshots = <String, String>{};
@@ -87,7 +108,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
     return formulas.where((formula) {
       if (formula.menu != menu) return false;
       if (query.isEmpty) return true;
-      final haystack = foldAccents('${formula.name} ${formula.id} ${formula.expression}');
+      final haystack = foldAccents('${formulaSearchBlob(formula.id, formula.name)} ${formula.expression}');
       return haystack.contains(query);
     }).toList();
   }
@@ -154,7 +175,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       aiProposal = null;
       aiOffer = false;
       aiBusy = false;
-      engineMode = 'Cálculo local';
+      engineMode = 'local';
+      errorStatus = null;
     });
   }
 
@@ -165,7 +187,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         choose(plan.formula!);
         setState(() {
           routingMessage = plan.reason;
-          engineMode = 'Cálculo local';
+          engineMode = 'local';
           aiOffer = false;
           aiProposal = null;
         });
@@ -173,10 +195,11 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       }
       setState(() {
         routingMessage = plan.reason;
-        engineMode = 'Interpretação por IA';
+        engineMode = 'ai';
         aiOffer = true;
         calculation = null;
         error = null;
+        errorStatus = null;
       });
     } on FormatException catch (exception) {
       setState(() => routingMessage = exception.message);
@@ -185,13 +208,15 @@ class _CalculatorHomeState extends State<CalculatorHome> {
 
   Future<void> interpretWithAi() async {
     final problem = problemController.text.trim();
+    final localeTag = AppScope.of(context).text.localeTag;
     setState(() {
       aiBusy = true;
       aiProposal = null;
       error = null;
+      errorStatus = null;
     });
     try {
-      final proposal = await (widget.gateway ?? VisionAiGateway()).interpret(problem);
+      final proposal = await (widget.gateway ?? VisionAiGateway()).interpret(problem, locale: localeTag);
       if (!mounted) return;
       final match = proposal.formulaId == null ? null : formulaById(proposal.formulaId!);
       if (match != null) choose(match);
@@ -200,21 +225,23 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       setState(() {
         aiProposal = proposal;
         aiOffer = false;
-        engineMode = 'Interpretação por IA';
-        routingMessage = 'Proposta da IA recebida. Confirme fórmula, variáveis, unidades e hipóteses antes de calcular.';
+        engineMode = 'ai';
+        routingMessage = 'proposal_received';
+      });
+    } on GatewayFailure catch (failure) {
+      if (!mounted) return;
+      PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': failure.code});
+      setState(() {
+        error = failure.code;
+        errorStatus = failure.statusCode;
       });
     } catch (exception) {
       if (!mounted) return;
-      final message = exception.toString().replaceFirst('Bad state: ', '');
-      final status = message.contains('quota')
-          ? 'quota'
-          : message.contains('rede')
-              ? 'offline'
-              : message.contains('configurado')
-                  ? 'unconfigured'
-                  : 'rejected';
-      PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': status});
-      setState(() => error = message);
+      PrivacyAnalytics.record('ai_parse_result', {'mode': 'interpret_only', 'status': 'rejected'});
+      setState(() {
+        error = exception.toString().replaceFirst('Bad state: ', '');
+        errorStatus = null;
+      });
     } finally {
       if (mounted) setState(() => aiBusy = false);
     }
@@ -248,7 +275,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       _applyProposalValues(proposal);
       setState(() {
         routingMessage = review.message;
-        engineMode = 'Cálculo local';
+        engineMode = 'local';
+        errorStatus = null;
       });
       calculate();
       return;
@@ -261,8 +289,9 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           CalculationStep('Valor local', '$value', 'Este número não vem do modelo e não certifica a expressão.'),
         ]);
         error = null;
+        errorStatus = null;
         routingMessage = review.message;
-        engineMode = 'Cálculo local';
+        engineMode = 'local';
         history.insert(0, HistoryEntry('Expressão confirmada', '$value', jsonEncode({'status': 'local_expression', 'result': value})));
       });
       return;
@@ -270,8 +299,9 @@ class _CalculatorHomeState extends State<CalculatorHome> {
     setState(() {
       calculation = null;
       error = review.status == 'blocked' || review.status == 'missing' ? review.message : null;
+      errorStatus = null;
       routingMessage = review.message;
-      engineMode = 'Interpretação por IA';
+      engineMode = 'ai';
     });
   }
 
@@ -283,6 +313,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         for (final entry in controllers.entries) entry.key: parseNumber(entry.value.text, entry.key),
       };
       final result = calculateFormula(formula, values);
+      final text = AppScope.of(context).text;
       final record = calculationRecord(
         formulaId: formula.id,
         formulaVersion: catalogVersion,
@@ -291,9 +322,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         inputs: values,
         result: result.value,
         unit: formula.unit,
-        limitations: formula.status == 'review_pending'
-            ? (formula.notes.isEmpty ? 'Revisão pendente. O cálculo não certifica conformidade.' : formula.notes)
-            : 'Cálculo local do catálogo $catalogVersion.',
+        limitations: text.limitations(formula.status, formula.notes, catalogVersion),
         confirmedAt: DateTime.now(),
       );
       PrivacyAnalytics.record('calculation_completed', {
@@ -305,8 +334,8 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       setState(() {
         calculation = result;
         error = null;
-        engineMode = 'Cálculo local';
-        history.insert(0, HistoryEntry(formula.name, '${result.value} ${formula.unit}', jsonEncode(record)));
+        engineMode = 'local';
+        history.insert(0, HistoryEntry(formula.id, '${result.value} ${formula.unit}', jsonEncode(record)));
       });
     } on FormatException catch (exception) {
       PrivacyAnalytics.record('validation_failed', {
@@ -317,6 +346,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
       setState(() {
         calculation = null;
         error = exception.message;
+        errorStatus = null;
       });
     }
   }
@@ -364,39 +394,57 @@ class _CalculatorHomeState extends State<CalculatorHome> {
     });
   }
 
+  String _historyTitle(AppText text, String titleId) {
+    final formula = formulaById(titleId);
+    if (formula != null) return text.formulaName(formula.id, formula.name);
+    return text.phrase(titleId);
+  }
+
   Widget _statusBar(bool wide) {
+    final text = AppScope.of(context).text;
     return Row(children: [
-      Expanded(child: Text(engineMode, key: const Key('engine-status'), style: VisionTheme.inter(size: 14, height: 21 / 14))),
-      TextButton(onPressed: () => setState(() => historyOpen = !historyOpen), child: Text(historyOpen ? 'Fechar' : 'Histórico')),
+      Expanded(
+        child: Text(
+          engineMode == 'ai' ? text.aiMode : text.localMode,
+          key: const Key('engine-status'),
+          style: VisionTheme.inter(size: 14, height: 21 / 14),
+        ),
+      ),
+      TextButton(onPressed: () => setState(() => historyOpen = !historyOpen), child: Text(historyOpen ? text.closeHistory : text.history)),
       if (wide)
         TextButton(
           onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AdvancedSolverPage())),
-          child: const Text('Avançado'),
+          child: Text(text.advanced),
         ),
     ]);
   }
 
   Widget _header(bool wide) {
+    final text = AppScope.of(context).text;
     return Row(children: [
       if (!wide)
         IconButton(
           key: const Key('open-catalog'),
-          tooltip: 'Abrir catálogo',
+          tooltip: text.openCatalog,
           onPressed: () => setState(() => catalogOpen = !catalogOpen),
           icon: const Icon(Icons.menu),
         ),
-      Expanded(child: Text('Vision Field Calc', style: Theme.of(context).textTheme.titleLarge)),
-      VisionSecondaryButton(label: 'Limpar', onPressed: clearWork),
+      Expanded(
+        child: Text('Vision Field Calc', maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.titleLarge),
+      ),
+      const LanguageButton(),
+      VisionSecondaryButton(label: text.clear, onPressed: clearWork),
     ]);
   }
 
   Widget _intro(bool wide) {
+    final text = AppScope.of(context).text;
     final title = Text(
-      'Cálculo técnico, no dispositivo.',
+      text.headline,
       style: wide ? Theme.of(context).textTheme.displayLarge : Theme.of(context).textTheme.headlineSmall,
     );
     final copy = Text(
-      'A Vision Field Calc procura primeiro uma fórmula local. A IA só interpreta o que o motor não resolve, e o resultado numérico continua a ser confirmado e calculado no dispositivo.',
+      text.intro,
       maxLines: 4,
       overflow: TextOverflow.ellipsis,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: VisionTheme.mutedText),
@@ -424,6 +472,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         VisionTabBar(
           scrollKey: const Key('menu-tabs'),
           tabs: catalogMenus,
+          labels: [for (final item in catalogMenus) AppScope.of(context).text.menu(item)],
           selected: menu,
           onSelected: (value) => setState(() {
             menu = value;
@@ -452,20 +501,21 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   }
 
   Widget _catalog() {
+    final text = AppScope.of(context).text;
     final solver = solverMenus.contains(menu);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       VisionField(
         key: const Key('problem-field'),
         controller: problemController,
-        label: 'Descreva o cálculo',
+        label: text.describe,
         keyboardType: TextInputType.text,
         onSubmitted: (_) => routeProblem(),
       ),
       const SizedBox(height: VisionTheme.space12),
-      VisionPrimaryButton(key: const Key('route-local'), label: 'Procurar no motor local', onPressed: routeProblem),
+      VisionPrimaryButton(key: const Key('route-local'), label: text.searchLocal, onPressed: routeProblem),
       if (aiOffer) ...[
         const SizedBox(height: VisionTheme.space8),
-        VisionPrimaryButton(key: const Key('continue-ai'), label: 'Continuar com IA', onPressed: aiBusy ? null : () => interpretWithAi()),
+        VisionPrimaryButton(key: const Key('continue-ai'), label: text.continueAi, onPressed: aiBusy ? null : () => interpretWithAi()),
       ],
       if (error != null) _error(error!),
       const SizedBox(height: VisionTheme.space12),
@@ -475,7 +525,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           children: [
         if (routingMessage != null) ...[
           const SizedBox(height: VisionTheme.space12),
-          Text(routingMessage!, style: Theme.of(context).textTheme.bodyMedium),
+          Text(text.present(routingMessage!, statusCode: errorStatus), style: Theme.of(context).textTheme.bodyMedium),
         ],
         if (error != null) ...[
           const SizedBox(height: VisionTheme.space12),
@@ -483,26 +533,20 @@ class _CalculatorHomeState extends State<CalculatorHome> {
         ],
         if (aiOffer) ...[
           const SizedBox(height: VisionTheme.space16),
-          Text(
-            'O pedido pode ser enviado ao Vision AI Gateway. A IA propõe a fórmula, variáveis, unidades e hipóteses. Nenhum resultado é aceite até confirmar esses parâmetros.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text(text.aiExplain, style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: VisionTheme.space12),
-          VisionSecondaryButton(label: 'Cancelar', onPressed: () => setState(() {
+          VisionSecondaryButton(label: text.cancel, onPressed: () => setState(() {
             aiOffer = false;
-            engineMode = 'Cálculo local';
+            engineMode = 'local';
           })),
         ],
         const SizedBox(height: VisionTheme.space16),
         if (solver)
-          Text(
-            'Este menu usa solucionadores numéricos locais, com os passos e a notação matemática no ecrã.',
-            style: Theme.of(context).textTheme.bodyMedium,
-          )
+          Text(text.solverIntro, style: Theme.of(context).textTheme.bodyMedium)
         else ...[
           VisionField(
             controller: filterController,
-            label: 'Filtrar neste menu',
+            label: text.filter,
             keyboardType: TextInputType.text,
             onSubmitted: (_) => setState(() {}),
           ),
@@ -520,7 +564,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                     constraints: const BoxConstraints(minHeight: 44),
                     padding: const EdgeInsets.symmetric(horizontal: VisionTheme.space12, vertical: VisionTheme.space8),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(formula.name, maxLines: 2, overflow: TextOverflow.ellipsis, style: VisionTheme.inter(size: 16, height: 24 / 16)),
+                      Text(text.formulaName(formula.id, formula.name), maxLines: 2, overflow: TextOverflow.ellipsis, style: VisionTheme.inter(size: 16, height: 24 / 16)),
                       Text(prettyMath(formula.expression), maxLines: 1, overflow: TextOverflow.ellipsis, style: VisionTheme.math.copyWith(fontSize: 16, color: VisionTheme.mutedText)),
                     ]),
                   ),
@@ -535,6 +579,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   }
 
   Widget _work() {
+    final text = AppScope.of(context).text;
     if (solverMenus.contains(menu)) return SolverWorkspace(menu: menu);
     final formula = selected;
     if (formula == null) {
@@ -544,7 +589,7 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           Expanded(
             child: ListView(key: const Key('work-list'), children: [
               Semantics(
-                label: 'Notação suportada: integral, somatório, pi, sigma, mu, delta, teta, lambda, ró, ómega, x, y e derivada',
+                label: text.notationLabel,
                 child: const SelectableText(
                   '∫    ∑    √    π    σ    μ    Δ    θ    λ    ρ    ω    x    y    dy/dx',
                   key: Key('math-notation'),
@@ -556,17 +601,14 @@ class _CalculatorHomeState extends State<CalculatorHome> {
                 AiProposalPanel(proposal: aiProposal!, onConfirm: confirmProposal, showAction: false),
               ],
               const SizedBox(height: VisionTheme.space16),
-              Text('Escolha uma fórmula no catálogo.', style: Theme.of(context).textTheme.headlineSmall),
+              Text(text.chooseFormula, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: VisionTheme.space12),
-              Text(
-                'Cada resultado mostra a fórmula, os dados confirmados, o domínio, a substituição e o valor. Entradas em revisão pendente continuam calculáveis e avisam que a validação técnica ainda não foi feita.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+              Text(text.chooseBody, style: Theme.of(context).textTheme.bodyLarge),
             ]),
           ),
           if (aiProposal != null) ...[
             const SizedBox(height: VisionTheme.space12),
-            VisionPrimaryButton(key: const Key('confirm-ai'), label: 'Confirmar parâmetros', onPressed: confirmProposal),
+            VisionPrimaryButton(key: const Key('confirm-ai'), label: text.confirmParameters, onPressed: confirmProposal),
           ],
         ],
       );
@@ -581,11 +623,11 @@ class _CalculatorHomeState extends State<CalculatorHome> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 FormulaCard(
-                  name: formula.name,
+                  name: text.formulaName(formula.id, formula.name),
                   expression: prettyMath(formula.expression),
                   spoken: formula.expression,
                   unit: formula.unit,
-                  statusLabel: formula.status == 'review_pending' ? 'Revisão pendente' : 'Implementado',
+                  statusLabel: formula.status == 'review_pending' ? text.pending : text.implemented,
                   version: catalogVersion,
                 ),
                 const SizedBox(height: VisionTheme.space16),
@@ -612,19 +654,20 @@ class _CalculatorHomeState extends State<CalculatorHome> {
           ),
         ),
         const SizedBox(height: VisionTheme.space12),
-        VisionPrimaryButton(key: const Key('calculate-local'), label: 'Confirmar parâmetros e calcular', onPressed: calculate),
+        VisionPrimaryButton(key: const Key('calculate-local'), label: text.confirmCalculate, onPressed: calculate),
       ],
     );
   }
 
   Widget _historyPanel() {
+    final text = AppScope.of(context).text;
     if (history.isEmpty) {
-      return Text('Ainda não há cálculos nesta sessão. O histórico fica no dispositivo e pode ser apagado.', style: Theme.of(context).textTheme.bodyLarge);
+      return Text(text.historyEmpty, style: Theme.of(context).textTheme.bodyLarge);
     }
     return ListView(children: [
       Row(children: [
-        Expanded(child: Text('Histórico local desta sessão', style: Theme.of(context).textTheme.titleMedium)),
-        VisionSecondaryButton(label: 'Apagar tudo', onPressed: () => setState(history.clear)),
+        Expanded(child: Text(text.historyTitle, style: Theme.of(context).textTheme.titleMedium)),
+        VisionSecondaryButton(label: text.deleteAll, onPressed: () => setState(history.clear)),
       ]),
       const SizedBox(height: VisionTheme.space16),
       for (var index = 0; index < history.length; index++)
@@ -638,14 +681,14 @@ class _CalculatorHomeState extends State<CalculatorHome> {
               border: Border.all(color: VisionTheme.subtleBorder, width: 0.5),
             ),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(history[index].title, style: Theme.of(context).textTheme.titleMedium),
+              Text(_historyTitle(text, history[index].title), style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: VisionTheme.space8),
               SelectableText(history[index].summary, style: VisionTheme.math.copyWith(fontSize: 22)),
               const SizedBox(height: VisionTheme.space8),
               SelectableText(history[index].exportJson, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: VisionTheme.space8),
               VisionSecondaryButton(
-                label: 'Apagar',
+                label: text.deleteOne,
                 onPressed: () => setState(() => history.removeAt(index)),
               ),
             ]),
@@ -655,9 +698,11 @@ class _CalculatorHomeState extends State<CalculatorHome> {
   }
 
   Widget _error(String message) {
+    final text = AppScope.of(context).text;
+    final shown = text.present(message, statusCode: errorStatus);
     return Padding(
       padding: const EdgeInsets.only(top: VisionTheme.space12),
-      child: Text('Erro: $message', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
+      child: Text('${text.errorPrefix}: $shown', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
     );
   }
 }

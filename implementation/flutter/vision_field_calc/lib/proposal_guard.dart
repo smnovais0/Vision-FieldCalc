@@ -33,13 +33,13 @@ ProposalReview reviewProposal({
   if (proposalRequestsExecution(blob)) {
     return const ProposalReview(
       status: 'blocked',
-      message: 'A proposta pede execução de código e foi recusada. Nenhum cálculo foi feito.',
+      message: 'blocked',
     );
   }
   if (missingFields.isNotEmpty) {
     return ProposalReview(
       status: 'missing',
-      message: 'Faltam parâmetros confirmados: ${missingFields.join(', ')}.',
+      message: 'missing:${missingFields.join(', ')}',
     );
   }
   final formula = formulaId == null ? null : formulaById(formulaId);
@@ -47,7 +47,7 @@ ProposalReview reviewProposal({
     return ProposalReview(
       status: 'local_formula',
       formula: formula,
-      message: 'Fórmula local confirmada. O número é calculado no dispositivo.',
+      message: 'local_formula',
     );
   }
   if (proposedExpression.trim().isNotEmpty) {
@@ -65,17 +65,17 @@ ProposalReview reviewProposal({
       return ProposalReview(
         status: 'local_expression',
         localValue: value,
-        message: 'A expressão foi recalculada no dispositivo. Não é uma fórmula certificada do catálogo.',
+        message: 'local_expression',
       );
     } on FormatException {
       return const ProposalReview(
         status: 'assisted',
-        message: 'Resultado assistido. Não há fórmula local para esta proposta, por isso nenhum número remoto é aceite. Verifique o cálculo de forma independente.',
+        message: 'assisted',
       );
     }
   }
   return const ProposalReview(
     status: 'assisted',
-    message: 'Resultado assistido. Não há fórmula local para esta proposta, por isso nenhum número remoto é aceite. Verifique o cálculo de forma independente.',
+    message: 'assisted',
   );
 }

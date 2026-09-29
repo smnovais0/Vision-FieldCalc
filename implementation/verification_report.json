@@ -6,7 +6,7 @@
   "review_pending_count": 30,
   "phases": {
     "F0": "baseline local no código; gate escrito da Direção continua por aprovar",
-    "F1": "interface Flutter em pt-PT, histórico com hash, unidades de apresentação, testes de domínio e solucionadores",
+    "F1": "interface Flutter web em inglês, com seletor pt/fr/es/de, histórico com hash, unidades de apresentação, testes de domínio e solucionadores",
     "F2": "proposta com confirmação, recálculo local, recusa de execução, quota, rede e credencial",
     "F3": "não iniciada: validação normativa e catálogo assinado",
     "F4": "não iniciada: lojas, builds assinados e Apple Pending Hardware"
@@ -19,7 +19,7 @@
     "O catálogo não declara galão nem temperatura; essas conversões existem na política e não são aplicadas a fórmulas.",
     "Pressão imperial não distingue manométrica de absoluta.",
     "Gateway real depende de VISION_AI_GATEWAY_URL. Sem endpoint não há chamada.",
-    "Windows e Android não foram compilados neste ambiente Linux.",
+    "A versão inicial é web. Android, iOS, Windows e macOS ficam para a versão seguinte e não foram compilados.",
     "Fase 3 e fase 4 ficam por fazer."
   ]
 }

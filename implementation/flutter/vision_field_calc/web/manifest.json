@@ -5,8 +5,8 @@
     "display": "standalone",
     "background_color": "#FDFCFC",
     "theme_color": "#FDFCFC",
-    "description": "Cálculo técnico local da Vision World Apps.",
-    "orientation": "portrait-primary",
+    "description": "Local technical calculation from Vision World Apps.",
+    "orientation": "any",
     "prefer_related_applications": false,
     "icons": [
         {

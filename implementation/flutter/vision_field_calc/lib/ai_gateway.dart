@@ -43,6 +43,12 @@ class AiProposal {
       );
 }
 
+class GatewayFailure extends StateError {
+  final String code;
+  final int? statusCode;
+  GatewayFailure(this.code, [this.statusCode]) : super(code);
+}
+
 class VisionAiGateway {
   static const endpoint = String.fromEnvironment('VISION_AI_GATEWAY_URL');
 
@@ -51,9 +57,9 @@ class VisionAiGateway {
 
   VisionAiGateway({String? baseUrl, this.client}) : baseUrl = baseUrl ?? endpoint;
 
-  Future<AiProposal> interpret(String problem) async {
+  Future<AiProposal> interpret(String problem, {String locale = 'en'}) async {
     if (baseUrl.isEmpty) {
-      throw StateError('Vision AI Gateway ainda não está configurado nesta instalação.');
+      throw GatewayFailure('unconfigured');
     }
     final httpClient = client ?? http.Client();
     final ownsClient = client == null;
@@ -68,7 +74,7 @@ class VisionAiGateway {
           },
           body: jsonEncode({
             'problem': problem,
-            'locale': 'pt-PT',
+            'locale': locale,
             'mode': 'interpret_only',
             'required_output': {
               'formula_id': true,
@@ -84,24 +90,24 @@ class VisionAiGateway {
           }),
         );
       } on http.ClientException {
-        throw StateError('Sem rede para o Vision AI Gateway. Os cálculos locais continuam disponíveis.');
+        throw GatewayFailure('offline');
       }
       if (response.statusCode == 429) {
-        throw StateError('A quota do Vision AI Gateway está esgotada. Os cálculos locais continuam disponíveis.');
+        throw GatewayFailure('quota');
       }
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw StateError('O Vision AI Gateway respondeu com o estado ${response.statusCode}.');
+        throw GatewayFailure('status', response.statusCode);
       }
       if (responseCarriesCredential(response.body)) {
-        throw StateError('A resposta do gateway foi recusada.');
+        throw GatewayFailure('rejected');
       }
       final decoded = jsonDecode(response.body);
       if (decoded is! Map<String, dynamic>) {
-        throw StateError('O Vision AI Gateway devolveu um formato inválido.');
+        throw GatewayFailure('invalid');
       }
       return AiProposal.fromJson(decoded);
     } on FormatException {
-      throw StateError('O Vision AI Gateway devolveu um formato inválido.');
+      throw GatewayFailure('invalid');
     } finally {
       if (ownsClient) httpClient.close();
     }

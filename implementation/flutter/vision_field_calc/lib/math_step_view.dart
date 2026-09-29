@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'generated/formula_engine.g.dart';
+import 'l10n/app_text.dart';
 import 'unit_policy.dart';
 import 'vision_theme.dart';
 
@@ -13,6 +14,8 @@ class MathStepView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
+    final imperial = _imperialNote(resultText, unit);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (pendingReview)
         Container(
@@ -24,19 +27,16 @@ class MathStepView extends StatelessWidget {
             borderRadius: BorderRadius.circular(VisionTheme.radiusControl),
             border: Border.all(color: VisionTheme.black, width: 1),
           ),
-          child: Text(
-            'Estado: revisão pendente. O cálculo é funcional, mas não certifica conformidade. Confirme norma, edição, hipóteses e fatores antes de uma decisão real.',
-            style: VisionTheme.inter(size: 16, height: 24 / 16),
-          ),
+          child: Text(text.reviewPending, style: VisionTheme.inter(size: 16, height: 24 / 16)),
         ),
       if (resultText != null && unit != null) ...[
         ResultLine(value: resultText!, unit: unit!),
-        if (_imperialNote(resultText!, unit!) != null) ...[
+        if (imperial != null) ...[
           const SizedBox(height: VisionTheme.space8),
-          Text(_imperialNote(resultText!, unit!)!, style: Theme.of(context).textTheme.bodySmall),
+          Text(text.imperialLine(imperial, resultText!, unit!), style: Theme.of(context).textTheme.bodySmall),
         ],
         const SizedBox(height: VisionTheme.space8),
-        Text(UnitPolicy.note(unit!), style: Theme.of(context).textTheme.bodySmall),
+        Text(text.unitNote(unit!), style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: VisionTheme.space16),
       ],
       for (var index = 0; index < steps.length; index++) ...[
@@ -45,9 +45,9 @@ class MathStepView extends StatelessWidget {
       ],
       const SizedBox(height: VisionTheme.space16),
       Semantics(
-        label: 'Notação suportada: integral, somatório, pi, sigma, mu, delta, teta, lambda, ró, ómega, x, y e derivada dy/dx',
+        label: text.notationLabel,
         child: SelectableText(
-          'Notação no ecrã: ∫   ∑   √   π   σ   μ   Δ   θ   λ   ρ   ω   x   y   dy/dx',
+          text.notationLine,
           style: VisionTheme.math.copyWith(fontSize: 20),
         ),
       ),
@@ -55,12 +55,11 @@ class MathStepView extends StatelessWidget {
   }
 }
 
-String? _imperialNote(String resultText, String unit) {
+String? _imperialNote(String? resultText, String? unit) {
+  if (resultText == null || unit == null) return null;
   final value = double.tryParse(resultText.trim());
   if (value == null) return null;
-  final equivalent = UnitPolicy.imperialEquivalent(value, unit);
-  if (equivalent == null) return null;
-  return 'Apresentação imperial: $equivalent. O valor das etapas seguintes permanece $resultText $unit.';
+  return UnitPolicy.imperialEquivalent(value, unit);
 }
 
 class ResultLine extends StatelessWidget {
@@ -70,8 +69,9 @@ class ResultLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
     return Semantics(
-      label: 'Resultado $value $unit',
+      label: text.resultLabel(value, unit),
       child: Container(
         key: const Key('result-value'),
         width: double.infinity,
@@ -93,6 +93,7 @@ class _StepCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
     return Container(
       padding: const EdgeInsets.all(VisionTheme.space16),
       decoration: BoxDecoration(
@@ -101,15 +102,25 @@ class _StepCard extends StatelessWidget {
         border: Border.all(color: VisionTheme.subtleBorder, width: 0.5),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('$index. ${step.title.replaceFirst(RegExp(r'^\d+\.\s*'), '')}', style: Theme.of(context).textTheme.titleMedium),
+        Text('$index. ${_shown(text, step.title)}', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: VisionTheme.space8),
         Semantics(
-          label: step.explanation,
+          label: _shown(text, step.explanation),
           child: Text(step.mathematics, style: VisionTheme.math.copyWith(fontSize: 22)),
         ),
         const SizedBox(height: VisionTheme.space8),
-        Text(step.explanation, style: Theme.of(context).textTheme.bodyMedium),
+        Text(_shown(text, step.explanation), style: Theme.of(context).textTheme.bodyMedium),
       ]),
     );
   }
+}
+
+String _shown(AppText text, String raw) {
+  final localized = text.phrase(raw);
+  final bare = raw.replaceFirst(RegExp(r'^\d+\.\s*'), '');
+  if (localized != bare) return localized;
+  for (final formula in formulas) {
+    if (formula.name == bare) return text.formulaName(formula.id, formula.name);
+  }
+  return localized;
 }

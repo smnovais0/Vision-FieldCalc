@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../ai_gateway.dart';
+import '../l10n/app_text.dart';
 import '../vision_theme.dart';
 
 class VisionPanel extends StatelessWidget {
@@ -60,12 +61,45 @@ class VisionSecondaryButton extends StatelessWidget {
   }
 }
 
+class LanguageButton extends StatelessWidget {
+  const LanguageButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scope = AppScope.of(context);
+    final code = scope.text.languageCode;
+    final current = AppText.supported.firstWhere(
+      (locale) => locale.languageCode == code,
+      orElse: () => const Locale('en'),
+    );
+    return PopupMenuButton<Locale>(
+      key: const Key('language-button'),
+      tooltip: scope.text.languageTooltip,
+      initialValue: current,
+      onSelected: scope.onLocale,
+      itemBuilder: (context) => [
+        for (final locale in AppText.pickerLocales)
+          PopupMenuItem<Locale>(
+            key: Key('language-${locale.languageCode}'),
+            value: locale,
+            child: Text(AppText.endonyms[locale.languageCode] ?? locale.languageCode),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: VisionTheme.space12, vertical: VisionTheme.space12),
+        child: Text(AppText.endonyms[code] ?? code, style: VisionTheme.inter(size: 14, height: 21 / 14)),
+      ),
+    );
+  }
+}
+
 class VisionTabBar extends StatelessWidget {
   final List<String> tabs;
+  final List<String>? labels;
   final String selected;
   final ValueChanged<String> onSelected;
   final Key? scrollKey;
-  const VisionTabBar({super.key, required this.tabs, required this.selected, required this.onSelected, this.scrollKey});
+  const VisionTabBar({super.key, required this.tabs, this.labels, required this.selected, required this.onSelected, this.scrollKey});
 
   @override
   Widget build(BuildContext context) {
@@ -74,8 +108,12 @@ class VisionTabBar extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          for (final tab in tabs) ...[
-            _TabChip(label: tab, active: tab == selected, onTap: () => onSelected(tab)),
+          for (var index = 0; index < tabs.length; index++) ...[
+            _TabChip(
+              label: labels != null && index < labels!.length ? labels![index] : tabs[index],
+              active: tabs[index] == selected,
+              onTap: () => onSelected(tabs[index]),
+            ),
             const SizedBox(width: VisionTheme.space8),
           ],
         ],
@@ -175,6 +213,7 @@ class FormulaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(VisionTheme.space20),
@@ -186,10 +225,10 @@ class FormulaCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(name, maxLines: 2, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: VisionTheme.space8),
-        Text('$statusLabel · catálogo $version · unidade $unit', style: Theme.of(context).textTheme.bodySmall),
+        Text(text.formulaMeta(statusLabel, version, unit), style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: VisionTheme.space16),
         Semantics(
-          label: 'Fórmula: $spoken',
+          label: '${text.formulaSpoken}: $spoken',
           child: Text(expression, maxLines: 2, overflow: TextOverflow.ellipsis, style: VisionTheme.math),
         ),
       ]),
@@ -205,6 +244,7 @@ class AiProposalPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
     return Container(
       key: const Key('ai-proposal'),
       width: double.infinity,
@@ -215,26 +255,23 @@ class AiProposalPanel extends StatelessWidget {
         border: Border.all(color: VisionTheme.subtleBorder, width: 0.5),
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Proposta da IA — confirmar antes de calcular', style: Theme.of(context).textTheme.titleMedium),
+        Text(text.proposalTitle, style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: VisionTheme.space8),
-        Text(
-          'Esta proposta não é um resultado validado. Confirme fórmula, variáveis, unidades e hipóteses. O número, quando existir, volta a ser calculado pelo motor local.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
+        Text(text.proposalBody, style: Theme.of(context).textTheme.bodyMedium),
         if (proposal.displayMath.isNotEmpty) ...[
           const SizedBox(height: VisionTheme.space16),
           SelectableText(proposal.displayMath, style: VisionTheme.math),
         ],
         const SizedBox(height: VisionTheme.space12),
-        Text('Variáveis: ${proposal.variables}', style: Theme.of(context).textTheme.bodyMedium),
-        Text('Unidades: ${proposal.units}', style: Theme.of(context).textTheme.bodyMedium),
+        Text('${text.variables}: ${proposal.variables}', style: Theme.of(context).textTheme.bodyMedium),
+        Text('${text.units}: ${proposal.units}', style: Theme.of(context).textTheme.bodyMedium),
         if (proposal.assumptions.isNotEmpty)
-          Text('Hipóteses: ${proposal.assumptions.join('; ')}', style: Theme.of(context).textTheme.bodyMedium),
+          Text('${text.assumptions}: ${proposal.assumptions.join('; ')}', style: Theme.of(context).textTheme.bodyMedium),
         if (proposal.missingFields.isNotEmpty)
-          Text('Em falta: ${proposal.missingFields.join(', ')}', style: Theme.of(context).textTheme.bodyMedium),
+          Text('${text.missing}: ${proposal.missingFields.join(', ')}', style: Theme.of(context).textTheme.bodyMedium),
         if (proposal.confidence != null)
-          Text('Confiança da proposta: ${proposal.confidence}', style: Theme.of(context).textTheme.bodySmall),
-        Text('Modo: ${proposal.providerMode}. Um número remoto não é resultado.', style: Theme.of(context).textTheme.bodySmall),
+          Text('${text.confidence}: ${proposal.confidence}', style: Theme.of(context).textTheme.bodySmall),
+        Text('${text.remoteNotResult} ${proposal.providerMode}.', style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: VisionTheme.space12),
         for (var index = 0; index < proposal.explanationSteps.length; index++)
           Padding(
@@ -243,7 +280,7 @@ class AiProposalPanel extends StatelessWidget {
           ),
         if (showAction) ...[
           const SizedBox(height: VisionTheme.space8),
-          VisionPrimaryButton(key: const Key('confirm-ai'), label: 'Confirmar parâmetros', onPressed: onConfirm),
+          VisionPrimaryButton(key: const Key('confirm-ai'), label: text.confirmParameters, onPressed: onConfirm),
         ],
       ]),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/app_text.dart';
 import 'local_solvers.dart';
 import 'math_step_view.dart';
 import 'privacy_analytics.dart';
@@ -147,39 +148,14 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
       PrivacyAnalytics.record('solver_completed', {'method': kind.name, 'status': 'error'});
       setState(() {
         run = null;
-        error = exception.toString().replaceFirst('FormatException: ', '').replaceFirst('Bad state: ', '');
+        error = exception.toString().replaceFirst('FormatException: ', '').replaceFirst('Bad state: ', '').replaceFirst('Unsupported operation: ', '');
       });
     }
   }
 
-  String _label(String key) => switch (key) {
-        'values' => 'Valores',
-        'weights' => 'Pesos',
-        'xs' => 'x',
-        'ys' => 'y',
-        'p' => 'Percentil p',
-        'n' => 'n',
-        'k' => 'k',
-        'sample' => 'Amostra (1 = sim)',
-        'coefficients' => 'Coeficientes a₀, a₁, …',
-        'matrix' => 'Matriz, linhas separadas por ;',
-        'vector' => 'Vetor b',
-        'expression' => kind == SolverKind.ode1 || kind == SolverKind.ode2 ? 'dy/dx ou y′′' : 'Expressão em x',
-        'lower' => 'Limite inferior',
-        'upper' => 'Limite superior',
-        'intervals' => 'Intervalos pares',
-        'point' => 'Ponto x',
-        'initial' => 'Valor inicial',
-        'x0' => 'x inicial',
-        'y0' => 'y inicial',
-        'dy0' => 'dy/dx inicial',
-        'x1' => 'x final',
-        'steps' => 'Passos',
-        _ => key,
-      };
-
   @override
   Widget build(BuildContext context) {
+    final text = AppScope.of(context).text;
     final spec = specs.firstWhere((item) => item.kind == kind);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -190,15 +166,16 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(widget.menu, style: Theme.of(context).textTheme.headlineSmall),
+                Text(text.menu(widget.menu), style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: VisionTheme.space8),
                 Text(
-                  'Método numérico local. A aproximação não é apresentada como igualdade exata.',
+                  text.solverMethod,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: VisionTheme.mutedText),
                 ),
                 const SizedBox(height: VisionTheme.space16),
                 VisionTabBar(
                   tabs: [for (final item in specs) item.label],
+                  labels: [for (final item in specs) text.solverTab(item.label)],
                   selected: spec.label,
                   onSelected: (label) {
                     setState(() => _load(specs.firstWhere((item) => item.label == label)));
@@ -209,7 +186,7 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
                   VisionField(
                     key: Key('solver-${entry.key}'),
                     controller: controllers[entry.key]!,
-                    label: _label(entry.key),
+                    label: text.solverField(entry.key, derivative: kind == SolverKind.ode1 || kind == SolverKind.ode2),
                     keyboardType: entry.key == 'expression' || entry.key == 'matrix' || entry.key == 'coefficients'
                         ? TextInputType.text
                         : const TextInputType.numberWithOptions(decimal: true, signed: true),
@@ -218,7 +195,7 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
                 ],
                 if (error != null) ...[
                   const SizedBox(height: VisionTheme.space12),
-                  Text('Erro: $error', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
+                  Text('${text.errorPrefix}: ${text.present(error!)}', style: VisionTheme.inter(size: 14, color: VisionTheme.error, height: 21 / 14)),
                 ],
                 if (run != null) ...[
                   const SizedBox(height: VisionTheme.space16),
@@ -229,7 +206,7 @@ class _SolverWorkspaceState extends State<SolverWorkspace> {
           ),
         ),
         const SizedBox(height: VisionTheme.space12),
-        VisionPrimaryButton(key: const Key('solver-run'), label: 'Resolver localmente', onPressed: solve),
+        VisionPrimaryButton(key: const Key('solver-run'), label: text.solveLocal, onPressed: solve),
       ],
     );
   }

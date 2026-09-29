@@ -1,4 +1,5 @@
 import 'generated/formula_engine.g.dart';
+import 'l10n/formula_names.dart';
 
 const catalogVersion = '2.0.0';
 const engineVersion = '0.3.0';
@@ -80,7 +81,7 @@ List<FormulaDefinition> matchLocalFormulas(String query) {
   final scored = <FormulaDefinition, int>{};
   var bestScore = 0;
   for (final formula in formulas) {
-    final haystack = queryTokens('${formula.name} ${formula.id.replaceAll('_', ' ')}').toSet();
+    final haystack = queryTokens(formulaSearchBlob(formula.id, formula.name)).toSet();
     final score = words.intersection(haystack).length;
     if (score == 0) continue;
     scored[formula] = score;
@@ -102,32 +103,23 @@ FormulaDefinition? findLocalFormula(String query) {
 RoutePlan planNaturalLanguage(String query) {
   final trimmed = query.trim();
   if (trimmed.isEmpty) {
-    throw const FormatException('Descreva primeiro o cálculo pretendido.');
+    throw const FormatException('empty');
   }
   final matches = matchLocalFormulas(trimmed);
   if (matches.length == 1) {
-    return RoutePlan.local(
-      matches.single,
-      'Fórmula local encontrada. Confirme os parâmetros e calcule no dispositivo.',
-    );
+    return RoutePlan.local(matches.single, 'local_found');
   }
   if (matches.length > 1) {
-    final names = matches.take(4).map((formula) => formula.name).join(', ');
-    return RoutePlan.ai(
-      'O pedido corresponde a mais do que uma fórmula local ($names). A interpretação por IA requer confirmação antes de calcular.',
-    );
+    final ids = matches.take(4).map((formula) => formula.id).join('|');
+    return RoutePlan.ai('ambiguous:$ids');
   }
-  return const RoutePlan.ai(
-    'O motor local não encontrou uma fórmula. A interpretação por IA requer confirmação dos dados antes de calcular.',
-  );
+  return const RoutePlan.ai('not_found');
 }
 
 RoutePlan planFormulaId(String formulaId) {
   final formula = formulaById(formulaId);
   if (formula == null) {
-    return const RoutePlan.ai(
-      'O catálogo local não reconhece a fórmula. A IA pode interpretar o pedido, mas o utilizador tem de confirmar os parâmetros antes de qualquer cálculo.',
-    );
+    return const RoutePlan.ai('unknown_id');
   }
-  return RoutePlan.local(formula, 'Fórmula suportada pelo motor determinístico local.');
+  return RoutePlan.local(formula, 'local_found');
 }

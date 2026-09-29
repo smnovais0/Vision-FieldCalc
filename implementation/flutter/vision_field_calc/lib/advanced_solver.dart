@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'l10n/app_text.dart';
 import 'solver_workspace.dart';
 import 'vision_theme.dart';
 
@@ -11,7 +12,7 @@ class AdvancedSolverPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: VisionTheme.canvas,
-      appBar: AppBar(title: const Text('Cálculo avançado local')),
+      appBar: AppBar(title: Text(AppScope.of(context).text.advancedTitle)),
       body: Padding(
         padding: const EdgeInsets.all(VisionTheme.space20),
         child: SolverWorkspace(menu: menu),

@@ -81,7 +81,7 @@ void main() {
       baseUrl: 'https://gateway.test',
       client: MockClient((request) async => throw http.ClientException('offline')),
     );
-    expect(offline.interpret('forma livre'), throwsA(predicate<StateError>((error) => error.message.contains('rede'))));
+    expect(offline.interpret('forma livre'), throwsA(predicate<StateError>((error) => error.message.contains('offline'))));
 
     final leaked = VisionAiGateway(
       baseUrl: 'https://gateway.test',
@@ -90,6 +90,6 @@ void main() {
         return http.Response(jsonEncode({'formula_id': 'AREA_CIRCLE_RADIUS', 'api_key': 'sk-test'}), 200);
       }),
     );
-    expect(leaked.interpret('forma livre'), throwsA(predicate<StateError>((error) => error.message.contains('recusada'))));
+    expect(leaked.interpret('forma livre'), throwsA(predicate<StateError>((error) => error.message.contains('rejected'))));
   });
 }
